@@ -1,0 +1,24 @@
+{
+  "name": "coolgrid",
+  "version": "1.0.0",
+  "description": "Just a cool visual toy to learn a few things I wanted to try out",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kidManuel/CoolGrid.git"
+  },
+  "keywords": [
+    "javascript",
+    "es6",
+    "visual"
+  ],
+  "author": "kidManuel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kidManuel/CoolGrid/issues"
+  },
+  "homepage": "https://github.com/kidManuel/CoolGrid#readme"
+}
