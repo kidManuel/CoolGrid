@@ -94,7 +94,6 @@ class module {
 
 function updateForceTo(newForce, direction) {
     const { axis, isVert, position, inverse } = newForce;
-    debugger;
     force.axis = axis;
     force.isVert = isVert;
     force.position = position;
@@ -200,7 +199,6 @@ function setListeners() {
 function changeQuadrant(newQuad) {
     if (force.quadrant !== newQuad) {
         force.quadrant = newQuad;
-        console.log(`QUADRANT CHANGED TO: ${newQuad}`)
     }
 }
 
@@ -226,10 +224,6 @@ function collectCss(updatePosition = false) {
 }
 
 function setNewPosition(element) {
-    if (element.x === 0 && element.y === 2) {
-        //debugger
-        console.log('new position of 0')
-    }
     const ammount = baseSpeed * force.direction;
     element[force.position] += ammount;
 
@@ -301,10 +295,6 @@ function setNewPosition(element) {
 
 function setGhost(element, container) {
     const { ghost } = container;
-    if (element.x === 0 && element.y === 2) {
-        //debugger
-        console.log('new GHOST of 0')
-    }
     if (force.direction === 1) {
         if (force.quadrant === quadrants.bot) {
             ghost.top = 0 - (containerHeight - element.top + baseSpeed);
@@ -364,18 +354,11 @@ function insertFirst(moduleArray, moduleElement) {
 
 (() => {
     prepContainer();
-    //console.log('prepContainer');
     getColumns();
-    //console.log('getColumns');
     createBaseCss();
-    //console.log('createBaseCss');
     prepModules();
-    //console.log('prepModules');
     initialModuleCssCollection();
-    //console.log('collectCss');
     setListeners();
-    //console.log('setListeners');
-    //console.log(modules)
     animationId = requestAnimationFrame(animationFrame);
 })()
 
