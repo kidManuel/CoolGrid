@@ -1,24 +1,38 @@
-export class module{
-    constructor(x, y) {
+import  { moduleSize, columnsAmmount } from './const';
+
+let hash = 0;
+const getNewHash = () => hash++;
+
+
+export default class module {
+    constructor(x, y, isGhost = false) {
+        //debugger;
         this.x = x;
         this.y = y;
-        this.id = `m${x}${y}`;
+        this.isGhost = isGhost;
+        this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
-        this.isGhost = false;
-        this.domModule = this.createDomModule();
+        this.domElement = this.createDomElement();
     }
 
-    createDomModule() {
-        const {x, y} = this;
+    getRight() {
+        return this.left + moduleSize;
+    }
+
+    getBottom() {
+        return this.top + moduleSize;
+    }
+
+    createDomElement() {
+        const { x, y } = this;
         let newElement = document.createElement("div");
         newElement.className = "module";
         newElement.id = this.id;
         newElement.innerText = `
-        #${y*columnsAmmount + x}
+        #${y * columnsAmmount + x}
         x: ${x}, y:${y}
         `;
-        container.appendChild(newElement);
         return newElement;
     }
 
