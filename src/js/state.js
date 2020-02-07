@@ -1,4 +1,4 @@
-var stateBase = {
+var state = {
     rowsAmmount: 3,
     columnsAmmount: 0,
     baseSpeed: 3,
@@ -23,4 +23,4 @@ var stateBase = {
     allModules: [] //sanity
 }
 
-export { stateBase };
+export { state };

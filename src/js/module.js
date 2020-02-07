@@ -1,4 +1,4 @@
-import  { moduleSize, columnsAmmount } from './const';
+import { state } from './state';
 
 let hash = 0;
 const getNewHash = () => hash++;
@@ -6,7 +6,7 @@ const getNewHash = () => hash++;
 
 export default class module {
     constructor(x, y, isGhost = false) {
-        //debugger;
+        let { moduleSize } = state;
         this.x = x;
         this.y = y;
         this.isGhost = isGhost;
@@ -17,14 +17,17 @@ export default class module {
     }
 
     getRight() {
+        let { moduleSize } = state;
         return this.left + moduleSize;
     }
 
     getBottom() {
+        let { moduleSize } = state;
         return this.top + moduleSize;
     }
 
     createDomElement() {
+        let { columnsAmmount } = state;
         const { x, y } = this;
         let newElement = document.createElement("div");
         newElement.className = "module";
