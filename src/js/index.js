@@ -1,6 +1,6 @@
 import module from './module';
 import * as constants from './const';
-import { stateBase } from './state';
+import { state } from './state';
 
 const {
     container,
@@ -10,7 +10,6 @@ const {
     verticalForce
 } = constants;
 
-let state  = stateBase;
 
 function updateForceTo(newForce, direction) {
     const { axis, isVert, position, inverse } = newForce;
