@@ -12,7 +12,7 @@ body, html {
     position: relative;
     width: 45vw;
     height: 40vh;
-    overflow: hidden;
+    /*overflow: hidden;*/   
     background-image: url('../guide-01.png');
     background-size: 100% 100%;
 }
@@ -33,4 +33,8 @@ body, html {
     left: 0;
     right: 0;
 
+}
+
+.ghost {
+    background-color: red;
 }

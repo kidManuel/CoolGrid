@@ -5,15 +5,16 @@ const getNewHash = () => hash++;
 
 
 export default class module {
-    constructor(x, y, isGhost = false) {
+    constructor(x, y, isGhost = false, ghostDirection = null) {
         let { moduleSize } = state;
         this.x = x;
         this.y = y;
-        this.isGhost = isGhost;
         this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
+        this.ghostDirection = ghostDirection;
         this.domElement = this.createDomElement();
+        this.setAsGhost(isGhost);
     }
 
     getRight() {
@@ -24,6 +25,11 @@ export default class module {
     getBottom() {
         let { moduleSize } = state;
         return this.top + moduleSize;
+    }
+
+    setAsGhost(isGhost) {
+        this.isGhost = isGhost;
+        this.domElement.classList.toggle('ghost', isGhost)
     }
 
     createDomElement() {

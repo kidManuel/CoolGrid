@@ -59,13 +59,13 @@ function prepModules() {
 
     //prep ghosts
     for (let i = 0; i < state.rowsAmmount; i++) {
-        const newGhost = new module(-1, i, true);
+        const newGhost = new module(-1, i, true, quadrants.right);
         state.modules.x[i].ghost = newGhost;
         container.appendChild(newGhost.domElement);
         state.allGhosts.push(newGhost);
     }
     for (let e = 0; e < state.columnsAmmount; e++) {
-        const newGhost = new module(e, -1, true)
+        const newGhost = new module(e, -1, true, quadrants.bot)
         container.appendChild(newGhost.domElement);
         state.modules.y[e].ghost = newGhost;
         state.allGhosts.push(newGhost);
@@ -153,56 +153,61 @@ function setNewPosition(element) {
 
 
     if (!element.isGhost) {
+        const {x, y} = element; 
         switch (state.force.quadrant) {
             case quadrants.bot:
                 if (
-                    !state.modules.y[element.x].isGhostActive &&              // column doesn't already have an active ghost
-                    bottom > state.containerHeight                            // module actually has gone too far
+                    getLine('y', x).ghost.ghostDirection !== quadrants.bot &&           // column ghost is in the correct position
+                    bottom > state.containerHeight                                      // module actually has gone too far
                 ) {
-                    setGhost(element, state.modules.y[element.x]);
+                    setGhost(element, getLine('y', [x]));
                     break;
                 }
+                
                 if (top > state.containerHeight) {
-                    shiftElement(element, state.modules.y[element.x]);
+                    shiftElement(element, getLine('y', [x]));
                     break;
                 }
                 break;
+
             case quadrants.top:
                 if (
-                    !state.modules.y[element.x].isGhostActive &&
+                    getLine('y', x).ghost.ghostDirection !== quadrants.top &&
                     top < 0
                 ) {
-                    setGhost(element, state.modules.y[element.x]);
+                    setGhost(element, getLine('y', [x]));
                     break;
                 }
                 if (bottom < 0) {
-                    shiftElement(element, state.modules.y[element.x]);
+                    shiftElement(element, getLine('y', [x]));
                     break;
                 }
                 break;
+
             case quadrants.left:
                 if (
-                    !state.modules.x[element.y].isGhostActive &&
+                    getLine('x', y).ghost.ghostDirection !== quadrants.left &&
                     left < 0
                 ) {
-                    setGhost(element, state.modules.x[element.y]);
+                    setGhost(element, getLine('x', [y]));
                     break;
                 }
                 if (right < 0) {
-                    shiftElement(element, state.modules.x[element.y]);
+                    shiftElement(element, getLine('x', [y]));
                     break;
                 }
                 break;
-            case quadrants.right:
+
+                case quadrants.right:
                 if (
-                    !state.modules.x[element.y].isGhostActive &&
+                    getLine('y', x).ghost.ghostDirection !== quadrants.right &&
                     right > state.containerWidth
                 ) {
-                    setGhost(element, state.modules.x[element.y]);
+                    setGhost(element, getLine('x', [y]));
                     break;
                 }
                 if (left > state.containerWidth) {
-                    shiftElement(element, state.modules.x[element.y]);
+                    shiftElement(element, getLine('x', [y]));
                     break;
                 }
                 break;
@@ -210,6 +215,10 @@ function setNewPosition(element) {
                 break;
         }
     }
+}
+
+function getLine(a, b) {
+    return state.modules[a][b];
 }
 
 function setGhost(element, container) {
@@ -227,8 +236,9 @@ function setGhost(element, container) {
             ghost.left = state.containerWidth + element.left + state.baseSpeed;
         }
     }
-    //ghost[state.force.position] = (state.force.isVert ? state.containerHeight : state.containerWidth) + (element[state.force.position] * state.force.direction * -1); 
-    container.isGhostActive = true;
+    // ghost[state.force.position] = (state.force.isVert ? state.containerHeight : state.containerWidth) + (element[state.force.position] * state.force.direction * -1);
+    // can be one line, but probablly it shouldnt. 
+    //container.isGhostActive = true;
     container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
 }
 
@@ -240,8 +250,8 @@ function shiftElement(element, container) {
     container.isGhostActive = false;
     container.ghost = element;
 
-    oldGhost.isGhost = false;
-    element.isGhost = true;
+    oldGhost.setAsGhost(false);
+    element.setAsGhost(true);
 
     contents.splice(element[axis], 1);                                  // remove old element from container since it is now a ghost
 
@@ -264,6 +274,7 @@ function insertFirst(moduleArray, moduleElement) {
 }
 
 (() => {
+    window.modules = state.modules; 
     prepContainer();
     getColumns();
     createBaseCss();
