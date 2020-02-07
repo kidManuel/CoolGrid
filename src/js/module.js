@@ -17,6 +17,10 @@ export default class module {
         this.setAsGhost(isGhost);
     }
 
+    applyForce(axis, ammount) {
+        this[axis] += ammount;
+    }
+
     getRight() {
         let { moduleSize } = state;
         return this.left + moduleSize;

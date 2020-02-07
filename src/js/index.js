@@ -134,36 +134,37 @@ function initialModuleCssCollection() {
 
 function collectCss(updatePosition = false) {
     let newCss = '';
-    const all = [...state.allModules, ...state.allGhosts]
-    all.forEach((singleModule) => {
+    state.allModules.forEach((singleModule) => {
         if (updatePosition) setNewPosition(singleModule);
         newCss += singleModule.getStyleString()
     });
+
+    state.allGhosts.forEach((singleModule) => {
+        newCss += singleModule.getStyleString()
+    });
+
     modulePositions.textContent = newCss;
 }
 
 function setNewPosition(element) {
     const ammount = state.baseSpeed * state.force.direction;
-    element[state.force.position] += ammount;
-
+    element.applyForce(state.force.position, ammount)
 
     const { top, left } = element;
-    const bottom = top + state.moduleSize;
+    const bottom = top + state.moduleSize; //////CHANGE TO GETTERS
     const right = left + state.moduleSize;
 
-
     if (!element.isGhost) {
-        const {x, y} = element; 
+        const { x, y } = element;
         switch (state.force.quadrant) {
             case quadrants.bot:
                 if (
-                    getLine('y', x).ghost.ghostDirection !== quadrants.bot &&           // column ghost is in the correct position
                     bottom > state.containerHeight                                      // module actually has gone too far
                 ) {
                     setGhost(element, getLine('y', [x]));
                     break;
                 }
-                
+
                 if (top > state.containerHeight) {
                     shiftElement(element, getLine('y', [x]));
                     break;
@@ -172,7 +173,6 @@ function setNewPosition(element) {
 
             case quadrants.top:
                 if (
-                    getLine('y', x).ghost.ghostDirection !== quadrants.top &&
                     top < 0
                 ) {
                     setGhost(element, getLine('y', [x]));
@@ -186,7 +186,6 @@ function setNewPosition(element) {
 
             case quadrants.left:
                 if (
-                    getLine('x', y).ghost.ghostDirection !== quadrants.left &&
                     left < 0
                 ) {
                     setGhost(element, getLine('x', [y]));
@@ -198,9 +197,8 @@ function setNewPosition(element) {
                 }
                 break;
 
-                case quadrants.right:
+            case quadrants.right:
                 if (
-                    getLine('y', x).ghost.ghostDirection !== quadrants.right &&
                     right > state.containerWidth
                 ) {
                     setGhost(element, getLine('x', [y]));
@@ -221,25 +219,26 @@ function getLine(a, b) {
     return state.modules[a][b];
 }
 
-function setGhost(element, container) {
+function setGhost(element, container) { ///////// CHANGE TO A SWITCH
     const { ghost } = container;
-    if (state.force.direction === 1) {
+    if (state.force.direction === 1) {                                          // RIGHT OR BOT
         if (state.force.quadrant === quadrants.bot) {
-            ghost.top = 0 - (state.containerHeight - element.top + state.baseSpeed);
+            ghost.top = 0 - (state.containerHeight - element.top);
         } else {
-            ghost.left = 0 - (state.containerWidth - element.left + state.baseSpeed);
+            ghost.left = 0 - (state.containerWidth - element.left);
         }
-    } else {
+    } else {                                                                    // LEFT OR TOP
         if (state.force.quadrant === quadrants.top) {
-            ghost.top = state.containerHeight + element.top + state.baseSpeed;
+            ghost.top = state.containerHeight + element.top;
         } else {
-            ghost.left = state.containerWidth + element.left + state.baseSpeed;
+            ghost.left = state.containerWidth + element.left;
         }
     }
+
     // ghost[state.force.position] = (state.force.isVert ? state.containerHeight : state.containerWidth) + (element[state.force.position] * state.force.direction * -1);
     // can be one line, but probablly it shouldnt. 
     //container.isGhostActive = true;
-    container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
+    //container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
 }
 
 function shiftElement(element, container) {
@@ -274,7 +273,7 @@ function insertFirst(moduleArray, moduleElement) {
 }
 
 (() => {
-    window.modules = state.modules; 
+    window.modules = state.modules;
     prepContainer();
     getColumns();
     createBaseCss();
