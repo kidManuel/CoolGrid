@@ -20,7 +20,7 @@ function updateForceTo(newForce, direction) {
     state.force.direction = direction;
 }
 
-function prepContainer() {
+function setup() {
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
     state.columnsAmmount = Math.floor(container.offsetWidth / state.moduleSize);
@@ -28,11 +28,20 @@ function prepContainer() {
     state.containerRatio = state.containerHeight / state.containerWidth;
     container.style.height = `${state.containerHeight}px`;
     container.style.width = `${state.containerWidth}px`;
-}
 
-function getColumns() {
     let width = container.offsetWidth;
     state.columnsAmmount = Math.floor((width * 1.1) / state.moduleSize);
+
+    const baseCss = `
+    .module {
+        width: ${state.moduleSize}px;
+        height: ${state.moduleSize}px;
+    }`
+    document.getElementById('baseCss').textContent = baseCss;
+
+    prepModules();
+    collectCss();
+    setListeners();
 }
 
 function prepModules() {
@@ -43,7 +52,6 @@ function prepModules() {
         speed: 0,
         debt: 0
     })
-
 
     //prep regualr modules
     for (let i = 0; i < state.rowsAmmount; i++) {
@@ -71,15 +79,6 @@ function prepModules() {
         container.appendChild(newGhost.domElement);
         state.allModules.push(newGhost);
     }
-}
-
-function createBaseCss() {
-    const baseCss = `
-    .module {
-        width: ${state.moduleSize}px;
-        height: ${state.moduleSize}px;
-    }`
-    document.getElementById('baseCss').textContent = baseCss;
 }
 
 function setListeners() {
@@ -129,10 +128,6 @@ function animationFrame() {
     requestAnimationFrame(animationFrame);
 }
 
-function initialModuleCssCollection() {
-    collectCss();
-}
-
 function collectCss(updatePosition = false) {
     let newCss = '';
     state.allModules.forEach((singleModule) => {
@@ -155,9 +150,7 @@ function setNewPosition(element) {
         const { x, y } = element;
         switch (state.force.quadrant) {
             case quadrants.bot:
-                if (
-                    bottom > state.containerHeight                                      // module actually has gone too far
-                ) {
+                if (bottom > state.containerHeight) {                                 // module actually has gone too far
                     setNewGhostPosition(element, getLine('y', x));
                 }
                 if (top > state.containerHeight) {
@@ -167,9 +160,7 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.top:
-                if (
-                    top < 0
-                ) {
+                if (top < 0) {
                     setNewGhostPosition(element, getLine('y', x));
                 }
                 if (bottom < 0) {
@@ -179,9 +170,7 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.left:
-                if (
-                    left < 0
-                ) {
+                if (left < 0) {
                     setNewGhostPosition(element, getLine('x', y));
                 }
                 if (right < 0) {
@@ -191,9 +180,7 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.right:
-                if (
-                    right > state.containerWidth
-                ) {
+                if (right > state.containerWidth) {
                     setNewGhostPosition(element, getLine('x', y));
                 }
                 if (left > state.containerWidth) {
@@ -265,12 +252,7 @@ function shiftElement(element, container) {
 (() => {
     window.modules = state.modules;
     window.state = state;
-    prepContainer();
-    getColumns();
-    createBaseCss();
-    prepModules();
-    initialModuleCssCollection();
-    setListeners();
+    setup();
     requestAnimationFrame(animationFrame);
 })()
 
