@@ -1,4 +1,5 @@
-body, html {
+body,
+html {
     height: 100%;
     width: 100%;
     text-align: center;
@@ -8,11 +9,11 @@ body, html {
 #visualContainer {
     display: inline-block;
     margin: 400px auto;
-    border: solid 1px black;
+    border: solid 3px black;
     position: relative;
     width: 45vw;
     height: 40vh;
-    /*overflow: hidden;*/   
+    overflow: hidden;
     background-image: url('../guide-01.png');
     background-size: 100% 100%;
 }
@@ -21,7 +22,7 @@ body, html {
     color: white;
     position: absolute;
     border: solid 1px white;
-    background-color: rgba(.3,.3,.3,.5);
+    background-color: rgba(.3, .3, .3, .5);
     box-sizing: border-box;
 }
 
@@ -32,7 +33,6 @@ body, html {
     margin: auto;
     left: 0;
     right: 0;
-
 }
 
 .ghost {

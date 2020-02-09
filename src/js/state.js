@@ -1,7 +1,7 @@
 var state = {
     rowsAmmount: 3,
     columnsAmmount: 0,
-    baseSpeed: 3,
+    baseSpeed: 4,
     containerHeight: 0,
     containerWidth: 0,
     containerRatio: 0,
@@ -19,7 +19,6 @@ var state = {
         x: [],
         y: []
     },
-    allGhosts: [],
     allModules: [] //sanity
 }
 
