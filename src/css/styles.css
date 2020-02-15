@@ -8,11 +8,11 @@ html {
 
 #visualContainer {
     display: inline-block;
-    margin: 400px auto;
+    margin: 100px auto;
     border: solid 3px black;
     position: relative;
-    width: 45vw;
-    height: 40vh;
+    width: 50vw;
+    height: 50vh;
     overflow: hidden;
     background-image: url('../guide-01.png');
     background-size: 100% 100%;

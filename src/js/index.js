@@ -6,19 +6,8 @@ const {
     container,
     modulePositions,
     quadrants,
-    horizontalForce,
-    verticalForce
+    forces
 } = constants;
-
-
-function updateForceTo(newForce, direction) {
-    const { axis, isVert, position, inverse } = newForce;
-    state.force.axis = axis;
-    state.force.isVert = isVert;
-    state.force.position = position;
-    state.force.inverse = inverse;
-    state.force.direction = direction;
-}
 
 function setup() {
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
@@ -39,9 +28,13 @@ function setup() {
     }`
     document.getElementById('baseCss').textContent = baseCss;
 
+    state.force = forces.nullForce;
+    state.prevForce = forces.nullForce;
+
     prepModules();
     collectCss();
     setListeners();
+
 }
 
 function prepModules() {
@@ -49,8 +42,7 @@ function prepModules() {
         contents: [],
         isGhostActive: false,
         ghost: null,
-        speed: 0,
-        debt: 0
+        speed: 0
     })
 
     //prep regualr modules
@@ -87,28 +79,23 @@ function setListeners() {
     })
     container.addEventListener('mouseleave', () => {
         state.shouldAnimate = false;
-        state.force.quadrant = null;
-        state.force.direction = null;
-        state.force.position = null;
+        state.force = forces.nullForce;
+        calculateDebt();
     })
     container.addEventListener('mousemove', (event) => {
         let mouseX = (event.clientX - container.offsetLeft) * state.containerRatio;
         let mouseY = event.clientY - container.offsetTop;
         if (mouseY > mouseX) {
             if (mouseX > state.containerHeight - mouseY) {
-                updateForceTo(verticalForce, 1)
-                changeQuadrant(quadrants.bot);
+                changeQuadrant(forces[quadrants.bot]);
             } else {
-                updateForceTo(horizontalForce, -1)
-                changeQuadrant(quadrants.left)
+                changeQuadrant(forces[quadrants.left])
             }
         } else {
             if (mouseX < state.containerWidth * state.containerRatio - mouseY) {
-                updateForceTo(verticalForce, -1)
-                changeQuadrant(quadrants.top)
+                changeQuadrant(forces[quadrants.top])
             } else {
-                updateForceTo(horizontalForce, 1)
-                changeQuadrant(quadrants.right)
+                changeQuadrant(forces[quadrants.right])
             }
         }
     })
@@ -116,9 +103,15 @@ function setListeners() {
 }
 
 function changeQuadrant(newQuad) {
-    if (state.force.quadrant !== newQuad) {
-        state.force.quadrant = newQuad;
+    const currentQuad = state.force;
+    if (currentQuad.quadrantName !== newQuad.quadrantName) {
+        state.prevForce = state.force;
+        state.force = newQuad;
+        console.log(newQuad);
     }
+    //debugger;
+    //dont calc debt on first enter
+    if (!(state.prevForce.quadrantName === 'nullForce')) calculateDebt();
 }
 
 function animationFrame() {
@@ -143,14 +136,15 @@ function setNewPosition(element) {
     element.applyForce(state.force.position, ammount)
 
     const { top, left } = element;
-    const bottom = top + state.moduleSize; //////CHANGE TO GETTERS
-    const right = left + state.moduleSize;
+    const bottom = element.getBottom();
+    const right = element.getRight();
 
     if (!element.isGhost) {
         const { x, y } = element;
-        switch (state.force.quadrant) {
+        switch (state.force.quadrantName) {
             case quadrants.bot:
-                if (bottom > state.containerHeight) {                                 // module actually has gone too far
+                if (bottom > state.containerHeight) {
+                                                     // module actually has gone too far
                     setNewGhostPosition(element, getLine('y', x));
                 }
                 if (top > state.containerHeight) {
@@ -200,7 +194,7 @@ function getLine(a, b) {
 
 function setNewGhostPosition(element, container) {
     const { ghost } = container;
-    switch (state.force.quadrant) {
+    switch (state.force.quadrantName) {
         case quadrants.bot:
             ghost.top = 0 - (state.containerHeight - element.top);
             break;
@@ -236,6 +230,7 @@ function shiftElement(element, container) {
 
     contents.splice(element[axis], 1);                                  // remove old element from container since it is now a ghost
 
+
     if (state.force.direction === 1) {
         contents.unshift(oldGhost);
     } else {
@@ -249,6 +244,31 @@ function shiftElement(element, container) {
     }
 }
 
+function calculateDebt() {
+    const axis = state.prevForce.axis;
+    const lines = state.modules[axis];
+    for (let e = 0; e < lines.length; e++) {
+        const currentLine = lines[e];
+        const firstModule = currentLine.contents[0];
+
+        //get the two opposites
+        const negative = state.prevForce.isVert ? firstModule.top : firstModule.left;
+        const positive = state.prevForce.isVert ? firstModule.getBottom() : firstModule.getRight();
+
+        //figure out which one is closest to 0, keeping sign
+        const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
+
+        if (ammount !== 0) {
+            for (let i = 0; i < currentLine.contents.length; i++) {
+                const singleModule = currentLine.contents[i];
+                singleModule.debt.ammount = ammount;
+                singleModule.debt.direction = state.prevForce.position;
+            }
+        }
+    }
+}
+
+
 (() => {
     window.modules = state.modules;
     window.state = state;
@@ -256,14 +276,11 @@ function shiftElement(element, container) {
     requestAnimationFrame(animationFrame);
 })()
 
-
-
-
 // TODO:
 // 
 // Set new "active column" var
 // general cleanup
-//
+// use foreachs whenever possible
 //
 //
 //

@@ -15,6 +15,10 @@ export default class module {
         this.ghostDirection = ghostDirection;
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
+        this.debt = {
+            direction: null,
+            ammount: 0
+        }
     }
 
     applyForce(axis, ammount) {
@@ -50,6 +54,13 @@ export default class module {
     }
 
     getStyleString() {
+        const debt = this.debt.ammount;
+        if (debt !== 0) {
+            //either move the full ammount, or the remainder, whichever is lower
+            const totalAmmount = Math.min(Math.abs(debt), state.maxSpeed);
+            this[this.debt.direction] += totalAmmount * -1 * Math.sign(debt);
+            this.debt.ammount -= totalAmmount;
+        }
         return `#${this.id}{ top: ${this.top}px; left:${this.left}px; }`
     }
 }

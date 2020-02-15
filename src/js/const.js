@@ -10,13 +10,13 @@ export const quadrants = {
     right: 'RIGHT'
 }
 
-export let horizontalForce = {
+let horizontalForce = {
     axis: 'x',
     isVert: false,
     position: 'left'
 }
 
-export let verticalForce = {
+let verticalForce = {
     axis: 'y',
     isVert: true,
     position: 'top',
@@ -25,3 +25,33 @@ export let verticalForce = {
 
 horizontalForce.inverse = verticalForce;
 
+export const forces = {
+    [quadrants.bot] :  {
+        quadrantName: quadrants.bot,
+        ...verticalForce,
+        direction: 1
+    },
+    [quadrants.top] :  {
+        quadrantName: quadrants.top,
+        ...verticalForce,
+        direction: -1
+    },
+    [quadrants.left] :  {
+        quadrantName: quadrants.left,
+        ...horizontalForce,
+        direction: -1
+    },
+    [quadrants.right] :  {
+        quadrantName: quadrants.right,
+        ...horizontalForce,
+        direction: 1
+    },
+    nullForce: {
+        quadrantName: 'nullForce',
+        axis: null,
+        isVert: null,
+        position: null,
+        inverse: null,
+        direction: null
+    }
+}
