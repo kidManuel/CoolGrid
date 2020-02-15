@@ -109,7 +109,6 @@ function changeQuadrant(newQuad) {
         state.force = newQuad;
         console.log(newQuad);
     }
-    //debugger;
     //dont calc debt on first enter
     if (!(state.prevForce.quadrantName === 'nullForce')) calculateDebt();
 }
@@ -133,8 +132,7 @@ function collectCss(updatePosition = false) {
 
 function setNewPosition(element) {
     const ammount = state.baseSpeed * state.force.direction;
-    element.applyForce(state.force.position, ammount)
-
+    const position = state.force.position;
     const { top, left } = element;
     const bottom = element.getBottom();
     const right = element.getRight();
@@ -143,10 +141,11 @@ function setNewPosition(element) {
         const { x, y } = element;
         switch (state.force.quadrantName) {
             case quadrants.bot:
-                if (bottom > state.containerHeight) {
-                                                     // module actually has gone too far
-                    setNewGhostPosition(element, getLine('y', x));
+                if (bottom + ammount > state.containerHeight) {
+                    // module actually has gone too far
+                    linkGhost(element, getLine('y', x));
                 }
+                element.applyForce(position, ammount);
                 if (top > state.containerHeight) {
                     shiftElement(element, getLine('y', x));
                     break;
@@ -154,9 +153,10 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.top:
-                if (top < 0) {
-                    setNewGhostPosition(element, getLine('y', x));
+                if (top + ammount < 0) {
+                    linkGhost(element, getLine('y', x));
                 }
+                element.applyForce(position, ammount);
                 if (bottom < 0) {
                     shiftElement(element, getLine('y', x));
                     break;
@@ -164,9 +164,10 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.left:
-                if (left < 0) {
-                    setNewGhostPosition(element, getLine('x', y));
+                if (left + ammount < 0) {
+                    linkGhost(element, getLine('x', y));
                 }
+                element.applyForce(position, ammount);
                 if (right < 0) {
                     shiftElement(element, getLine('x', y));
                     break;
@@ -174,9 +175,10 @@ function setNewPosition(element) {
                 break;
 
             case quadrants.right:
-                if (right > state.containerWidth) {
-                    setNewGhostPosition(element, getLine('x', y));
+                if (right + ammount > state.containerWidth) {
+                    linkGhost(element, getLine('x', y));
                 }
+                element.applyForce(position, ammount);
                 if (left > state.containerWidth) {
                     shiftElement(element, getLine('x', y));
                     break;
@@ -192,30 +194,11 @@ function getLine(a, b) {
     return state.modules[a][b];
 }
 
-function setNewGhostPosition(element, container) {
-    const { ghost } = container;
-    switch (state.force.quadrantName) {
-        case quadrants.bot:
-            ghost.top = 0 - (state.containerHeight - element.top);
-            break;
-        case quadrants.top:
-            ghost.top = state.containerHeight + element.top;
-            break;
-        case quadrants.left:
-            ghost.left = state.containerWidth + element.left;
-            break;
-        case quadrants.right:
-            ghost.left = 0 - (state.containerWidth - element.left);
-            break;
-        default:
-            break;
-    }
-
-    // ghost[state.force.position] = (state.force.isVert ? state.containerHeight : state.containerWidth) + (element[state.force.position] * state.force.direction * -1);
-    // can be one line, but probablly it shouldnt. 
-    //container.isGhostActive = true;
+function linkGhost(element, line) {
     //container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
+    element.linkedGhost = line.ghost;
 }
+
 
 function shiftElement(element, container) {
     const oldGhost = container.ghost;

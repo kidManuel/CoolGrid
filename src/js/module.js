@@ -1,28 +1,24 @@
 import { state } from './state';
+import { quadrants } from './const'
 
 let hash = 0;
 const getNewHash = () => hash++;
 
-
 export default class module {
-    constructor(x, y, isGhost = false, ghostDirection = null) {
+    constructor(x, y, isGhost = false) {
         let { moduleSize } = state;
         this.x = x;
         this.y = y;
         this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
-        this.ghostDirection = ghostDirection;
+        this.linkedGhost = null;
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
         this.debt = {
             direction: null,
             ammount: 0
         }
-    }
-
-    applyForce(axis, ammount) {
-        this[axis] += ammount;
     }
 
     getRight() {
@@ -35,8 +31,31 @@ export default class module {
         return this.top + moduleSize;
     }
 
+    applyForce(axis, ammount) {
+        this[axis] += ammount;
+        if (this.linkedGhost) {
+            switch (state.force.quadrantName) {
+                case quadrants.bot:
+                    this.linkedGhost.top = 0 - (state.containerHeight - this.top);
+                    break;
+                case quadrants.top:
+                    this.linkedGhost.top = state.containerHeight + this.top;
+                    break;
+                case quadrants.left:
+                    this.linkedGhost.left = state.containerWidth + this.left;
+                    break;
+                case quadrants.right:
+                    this.linkedGhost.left = 0 - (state.containerWidth - this.left);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     setAsGhost(isGhost) {
         this.isGhost = isGhost;
+        this.linkedGhost = null;
         this.domElement.classList.toggle('ghost', isGhost)
     }
 
