@@ -1,5 +1,5 @@
 import { state } from './state';
-import { quadrants } from './const'
+import { container } from './const';
 
 let hash = 0;
 const getNewHash = () => hash++;
@@ -12,7 +12,10 @@ export default class module {
         this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
-        this.linkedGhost = null;
+        this.linkedGhosts = {
+            x: null,
+            y: null
+        };
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
         this.debt = {
@@ -33,23 +36,20 @@ export default class module {
 
     applyForce(axis, ammount) {
         this[axis] += ammount;
-        if (this.linkedGhost) {
-            switch (state.force.quadrantName) {
-                case quadrants.bot:
-                    this.linkedGhost.top = 0 - (state.containerHeight - this.top);
-                    break;
-                case quadrants.top:
-                    this.linkedGhost.top = state.containerHeight + this.top;
-                    break;
-                case quadrants.left:
-                    this.linkedGhost.left = state.containerWidth + this.left;
-                    break;
-                case quadrants.right:
-                    this.linkedGhost.left = 0 - (state.containerWidth - this.left);
-                    break;
-                default:
-                    break;
-            }
+        debugger;
+        if (this.linkedGhosts.x) {
+            const { left } = this
+            const { containerWidth } = state;
+            const operation = Math.sign(left) * -1;
+            const newPosition = left + (containerWidth * operation);
+            this.linkedGhosts.x.left = newPosition;
+        }
+        if (this.linkedGhosts.y) {
+            const { top } = this
+            const { containerHeight } = state;
+            const operation = Math.sign(top) * -1;
+            const newPosition = top + (containerHeight * operation);
+            this.linkedGhosts.y.top = newPosition;
         }
     }
 

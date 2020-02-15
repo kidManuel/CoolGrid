@@ -196,7 +196,7 @@ function getLine(a, b) {
 
 function linkGhost(element, line) {
     //container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
-    element.linkedGhost = line.ghost;
+    element.linkedGhosts[state.force.axis] = line.ghost;
 }
 
 
