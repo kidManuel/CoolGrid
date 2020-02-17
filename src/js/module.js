@@ -1,14 +1,14 @@
 import { state } from './state';
-import { container } from './const';
 
 let hash = 0;
 const getNewHash = () => hash++;
 
 export default class module {
     constructor(x, y, isGhost = false) {
-        let { moduleSize } = state;
+        let { moduleSize, columnsAmmount } = state;
         this.x = x;
         this.y = y;
+        this.number = y * columnsAmmount + x;
         this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
@@ -16,6 +16,7 @@ export default class module {
             x: null,
             y: null
         };
+        this.linkedTo = null;
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
         this.debt = {
@@ -36,7 +37,6 @@ export default class module {
 
     applyForce(axis, ammount) {
         this[axis] += ammount;
-        debugger;
         if (this.linkedGhosts.x) {
             const { left } = this
             const { containerWidth } = state;
@@ -53,20 +53,22 @@ export default class module {
         }
     }
 
+
     setAsGhost(isGhost) {
         this.isGhost = isGhost;
-        this.linkedGhost = null;
+        this.linkedGhosts.x = null;
+        this.linkedGhosts.y = null;
+        this.linkedTo = null;
         this.domElement.classList.toggle('ghost', isGhost)
     }
 
     createDomElement() {
-        let { columnsAmmount } = state;
         const { x, y } = this;
         let newElement = document.createElement("div");
         newElement.className = "module";
         newElement.id = this.id;
         newElement.innerText = `
-        #${y * columnsAmmount + x}
+        #${this.number}
         x: ${x}, y:${y}
         `;
         return newElement;

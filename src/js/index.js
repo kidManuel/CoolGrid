@@ -40,7 +40,6 @@ function setup() {
 function prepModules() {
     const emptyLine = () => ({
         contents: [],
-        isGhostActive: false,
         ghost: null,
         speed: 0
     })
@@ -124,9 +123,8 @@ function collectCss(updatePosition = false) {
     let newCss = '';
     state.allModules.forEach((singleModule) => {
         if (updatePosition && !singleModule.isGhost) setNewPosition(singleModule);
-        newCss += singleModule.getStyleString()
+        newCss += singleModule.getStyleString();
     });
-
     modulePositions.textContent = newCss;
 }
 
@@ -136,58 +134,54 @@ function setNewPosition(element) {
     const { top, left } = element;
     const bottom = element.getBottom();
     const right = element.getRight();
+    const { x, y } = element;
 
-    if (!element.isGhost) {
-        const { x, y } = element;
-        switch (state.force.quadrantName) {
-            case quadrants.bot:
-                if (bottom + ammount > state.containerHeight) {
-                    // module actually has gone too far
-                    linkGhost(element, getLine('y', x));
-                }
-                element.applyForce(position, ammount);
-                if (top > state.containerHeight) {
-                    shiftElement(element, getLine('y', x));
-                    break;
-                }
+    switch (state.force.quadrantName) {
+        case quadrants.bot:
+            //if (element.id === "m12") debugger;
+            if (top + ammount > state.containerHeight) {
+                shiftElement(element, getLine('y', x));
                 break;
+            }
+            if (bottom + ammount > state.containerHeight) {
+                linkGhost(element, getLine('y', x));
+            }
+            break;
 
-            case quadrants.top:
-                if (top + ammount < 0) {
-                    linkGhost(element, getLine('y', x));
-                }
-                element.applyForce(position, ammount);
-                if (bottom < 0) {
-                    shiftElement(element, getLine('y', x));
-                    break;
-                }
+        case quadrants.top:
+            if (bottom + ammount < 0) {
+                shiftElement(element, getLine('y', x));
                 break;
+            }
+            if (top + ammount < 0) {
+                linkGhost(element, getLine('y', x));
+            }
+            break;
 
-            case quadrants.left:
-                if (left + ammount < 0) {
-                    linkGhost(element, getLine('x', y));
-                }
-                element.applyForce(position, ammount);
-                if (right < 0) {
-                    shiftElement(element, getLine('x', y));
-                    break;
-                }
+        case quadrants.left:
+            if (right + ammount < 0) {
+                shiftElement(element, getLine('x', y));
                 break;
+            }
+            if (left + ammount < 0) {
+                linkGhost(element, getLine('x', y));
+            }
+            break;
 
-            case quadrants.right:
-                if (right + ammount > state.containerWidth) {
-                    linkGhost(element, getLine('x', y));
-                }
-                element.applyForce(position, ammount);
-                if (left > state.containerWidth) {
-                    shiftElement(element, getLine('x', y));
-                    break;
-                }
+        case quadrants.right:
+            if (left + ammount > state.containerWidth) {
+                shiftElement(element, getLine('x', y));
                 break;
-            default:
-                break;
-        }
+            }
+            if (right + ammount > state.containerWidth) {
+                linkGhost(element, getLine('x', y));
+            }
+            break;
+        default:
+            break;
     }
+    element.applyForce(position, ammount);
+
 }
 
 function getLine(a, b) {
@@ -195,8 +189,11 @@ function getLine(a, b) {
 }
 
 function linkGhost(element, line) {
-    //container.ghost.innerHTML = element.innerHTML;  /////// CHECK THIS!!
-    element.linkedGhosts[state.force.axis] = line.ghost;
+    const { ghost } = line;
+    if (!ghost.linkedTo) {
+        element.linkedGhosts[state.force.axis] = ghost;
+        ghost.linkedTo = element;
+    }
 }
 
 
@@ -205,9 +202,8 @@ function shiftElement(element, container) {
     const { contents } = container;
     const { axis, inverse } = state.force;
     const iAxis = inverse.axis;
-    container.isGhostActive = false;
-    container.ghost = element;
 
+    container.ghost = element;
     oldGhost.setAsGhost(false);
     element.setAsGhost(true);
 
