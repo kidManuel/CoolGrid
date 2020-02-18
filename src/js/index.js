@@ -77,10 +77,9 @@ function setListeners() {
         state.shouldAnimate = true;
     })
     container.addEventListener('mouseleave', () => {
-        state.shouldAnimate = false;
-        state.force = forces.nullForce;
-        calculateDebt();
+        changeQuadrant(forces.nullForce);
     })
+
     container.addEventListener('mousemove', (event) => {
         let mouseX = (event.clientX - container.offsetLeft) * state.containerRatio;
         let mouseY = event.clientY - container.offsetTop;
@@ -101,6 +100,7 @@ function setListeners() {
 
 }
 
+
 function changeQuadrant(newQuad) {
     const currentQuad = state.force;
     if (currentQuad.quadrantName !== newQuad.quadrantName) {
@@ -109,8 +109,11 @@ function changeQuadrant(newQuad) {
         console.log(newQuad);
     }
     //dont calc debt on first enter
-    if (!(state.prevForce.quadrantName === 'nullForce')) calculateDebt();
+    if (!(state.prevForce.quadrantName === 'nullForce')) {
+        calculateDebt();
+    }
 }
+
 
 function animationFrame() {
     if (state.shouldAnimate) {
