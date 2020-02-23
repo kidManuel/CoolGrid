@@ -1,4 +1,5 @@
 import module from './module';
+import line from './line';
 import * as constants from './const';
 import { state } from './state';
 
@@ -10,6 +11,7 @@ const {
 } = constants;
 
 function setup() {
+
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
     state.columnsAmmount = Math.floor(container.offsetWidth / state.moduleSize);
@@ -34,21 +36,14 @@ function setup() {
     prepModules();
     collectCss();
     setListeners();
-
 }
 
 function prepModules() {
-    const emptyLine = () => ({
-        contents: [],
-        ghost: null,
-        speed: 0
-    })
-
     //prep regualr modules
     for (let i = 0; i < state.rowsAmmount; i++) {
-        state.modules.x[i] = emptyLine();
+        state.modules.x[i] = new line(false, i);
         for (let e = 0; e < state.columnsAmmount; e++) {
-            if (i === 0) state.modules.y[e] = emptyLine();
+            if (i === 0) state.modules.y[e] = new line(true, e);
             let newElement = new module(e, i);
             state.modules.x[i].contents[e] = newElement;
             state.modules.y[e].contents[i] = newElement;
@@ -59,16 +54,18 @@ function prepModules() {
 
     //prep ghosts
     for (let i = 0; i < state.rowsAmmount; i++) {
-        const newGhost = new module(-1, i, true, quadrants.right);
-        state.modules.x[i].ghost = newGhost;
+        const newGhost = new module(-1, i, true);
+        const line = state.modules.x[i];
+        line.ghost = newGhost;
+        newGhost.linkedTo = line.contents[0];
         container.appendChild(newGhost.domElement);
-        state.allModules.push(newGhost);
     }
     for (let e = 0; e < state.columnsAmmount; e++) {
-        const newGhost = new module(e, -1, true, quadrants.bot)
-        state.modules.y[e].ghost = newGhost;
+        const newGhost = new module(e, -1, true);
+        const line = state.modules.y[e];
+        line.ghost = newGhost;
+        newGhost.linkedTo = line.contents[0];
         container.appendChild(newGhost.domElement);
-        state.allModules.push(newGhost);
     }
 }
 
@@ -100,7 +97,6 @@ function setListeners() {
 
 }
 
-
 function changeQuadrant(newQuad) {
     const currentQuad = state.force;
     if (currentQuad.quadrantName !== newQuad.quadrantName) {
@@ -113,7 +109,6 @@ function changeQuadrant(newQuad) {
         calculateDebt();
     }
 }
-
 
 function animationFrame() {
     if (state.shouldAnimate) {
@@ -128,6 +123,14 @@ function collectCss(updatePosition = false) {
         if (updatePosition && !singleModule.isGhost) setNewPosition(singleModule);
         newCss += singleModule.getStyleString();
     });
+    state.modules.x.forEach((singleLine) => {
+        if (updatePosition) singleLine.setGhostPosition();
+        newCss += singleLine.ghost.getStyleString();
+    })
+    state.modules.y.forEach((singleLine) => {
+        if (updatePosition) singleLine.setGhostPosition();
+        newCss += singleLine.ghost.getStyleString();
+    })
     modulePositions.textContent = newCss;
 }
 
@@ -141,64 +144,59 @@ function setNewPosition(element) {
 
     switch (state.force.quadrantName) {
         case quadrants.bot:
-            //if (element.id === "m12") debugger;
-            if (top + ammount > state.containerHeight) {
-                shiftElement(element, getLine('y', x));
+            {
+                if (top + ammount > state.containerHeight) {
+                    shiftElement(element, getLine('y', x));
+                    break;
+                }
+                if (bottom + ammount > state.containerHeight) {
+                    getLine('y', x).linkGhost(element);
+                }
                 break;
             }
-            if (bottom + ammount > state.containerHeight) {
-                linkGhost(element, getLine('y', x));
-            }
-            break;
-
         case quadrants.top:
-            if (bottom + ammount < 0) {
-                shiftElement(element, getLine('y', x));
+            {
+                if (bottom + ammount < 0) {
+                    shiftElement(element, getLine('y', x));
+                    break;
+                }
+                if (top + ammount < 0) {
+                    getLine('y', x).linkGhost(element);
+                }
                 break;
             }
-            if (top + ammount < 0) {
-                linkGhost(element, getLine('y', x));
-            }
-            break;
-
         case quadrants.left:
-            if (right + ammount < 0) {
-                shiftElement(element, getLine('x', y));
+            {
+                if (right + ammount < 0) {
+                    shiftElement(element, getLine('x', y));
+                    break;
+                }
+                if (left + ammount < 0) {
+                    getLine('x', y).linkGhost(element);
+                }
                 break;
             }
-            if (left + ammount < 0) {
-                linkGhost(element, getLine('x', y));
-            }
-            break;
-
         case quadrants.right:
-            if (left + ammount > state.containerWidth) {
-                shiftElement(element, getLine('x', y));
+            {
+                if (left + ammount > state.containerWidth) {
+                    shiftElement(element, getLine('x', y));
+                    break;
+                }
+                if (right + ammount > state.containerWidth) {
+                    getLine('x', y).linkGhost(element);
+                }
                 break;
+
             }
-            if (right + ammount > state.containerWidth) {
-                linkGhost(element, getLine('x', y));
-            }
-            break;
         default:
             break;
     }
     element.applyForce(position, ammount);
-
 }
 
 function getLine(a, b) {
     return state.modules[a][b];
 }
-
-function linkGhost(element, line) {
-    const { ghost } = line;
-    if (!ghost.linkedTo) {
-        element.linkedGhosts[state.force.axis] = ghost;
-        ghost.linkedTo = element;
-    }
-}
-
 
 function shiftElement(element, container) {
     const oldGhost = container.ghost;
@@ -211,7 +209,6 @@ function shiftElement(element, container) {
     element.setAsGhost(true);
 
     contents.splice(element[axis], 1);                                  // remove old element from container since it is now a ghost
-
 
     if (state.force.direction === 1) {
         contents.unshift(oldGhost);

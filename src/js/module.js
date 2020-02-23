@@ -12,10 +12,6 @@ export default class module {
         this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
-        this.linkedGhosts = {
-            x: null,
-            y: null
-        };
         this.linkedTo = null;
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
@@ -37,29 +33,12 @@ export default class module {
 
     applyForce(axis, ammount) {
         this[axis] += ammount;
-        if (this.linkedGhosts.x) {
-            const { left } = this
-            const { containerWidth } = state;
-            const operation = Math.sign(left) * -1;
-            const newPosition = left + (containerWidth * operation);
-            this.linkedGhosts.x.left = newPosition;
-        }
-        if (this.linkedGhosts.y) {
-            const { top } = this
-            const { containerHeight } = state;
-            const operation = Math.sign(top) * -1;
-            const newPosition = top + (containerHeight * operation);
-            this.linkedGhosts.y.top = newPosition;
-        }
     }
-
 
     setAsGhost(isGhost) {
         this.isGhost = isGhost;
-        this.linkedGhosts.x = null;
-        this.linkedGhosts.y = null;
         this.linkedTo = null;
-        this.domElement.classList.toggle('ghost', isGhost)
+        this.domElement.classList.toggle('ghost', isGhost);
     }
 
     createDomElement() {

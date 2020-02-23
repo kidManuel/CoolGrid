@@ -1,4 +1,4 @@
-var state = {
+let state = {
     rowsAmmount: 3,
     columnsAmmount: 0,
     baseSpeed: 4,
