@@ -14,14 +14,14 @@ let horizontalForce = {
     axis: 'x',
     isVert: false,
     position: 'left',
-    inverse: verticalForce
+    inverseAxis: 'y'
 }
 
 let verticalForce = {
     axis: 'y',
     isVert: true,
     position: 'top',
-    inverse: horizontalForce
+    inverseAxis: 'x'
 }
 
 export const forces = {

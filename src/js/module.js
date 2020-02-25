@@ -35,9 +35,9 @@ export default class module {
         this[axis] += ammount;
     }
 
-    setAsGhost(isGhost) {
+    setAsGhost(isGhost, linkTo) {
         this.isGhost = isGhost;
-        this.linkedTo = null;
+        this.linkedTo = isGhost && linkTo ? linkTo : null;
         this.domElement.classList.toggle('ghost', isGhost);
     }
 

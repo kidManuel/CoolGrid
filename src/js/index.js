@@ -11,7 +11,6 @@ const {
 } = constants;
 
 function setup() {
-
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
     state.columnsAmmount = Math.floor(container.offsetWidth / state.moduleSize);
@@ -59,6 +58,7 @@ function prepModules() {
         line.ghost = newGhost;
         newGhost.linkedTo = line.contents[0];
         container.appendChild(newGhost.domElement);
+        state.allModules.push(newGhost);
     }
     for (let e = 0; e < state.columnsAmmount; e++) {
         const newGhost = new module(e, -1, true);
@@ -66,6 +66,7 @@ function prepModules() {
         line.ghost = newGhost;
         newGhost.linkedTo = line.contents[0];
         container.appendChild(newGhost.domElement);
+        state.allModules.push(newGhost);
     }
 }
 
@@ -120,7 +121,7 @@ function animationFrame() {
 function collectCss(updatePosition = false) {
     let newCss = '';
     state.allModules.forEach((singleModule) => {
-        if (updatePosition && !singleModule.isGhost) setNewPosition(singleModule);
+        if (updatePosition && !singleModule.linkedTo) setNewPosition(singleModule);
         newCss += singleModule.getStyleString();
     });
     state.modules.x.forEach((singleLine) => {
@@ -201,12 +202,11 @@ function getLine(a, b) {
 function shiftElement(element, container) {
     const oldGhost = container.ghost;
     const { contents } = container;
-    const { axis, inverse } = state.force;
-    const iAxis = inverse.axis;
+    const { axis, inverseAxis } = state.force;
 
     container.ghost = element;
+    element.setAsGhost(true, oldGhost.linkedTo);
     oldGhost.setAsGhost(false);
-    element.setAsGhost(true);
 
     contents.splice(element[axis], 1);                                  // remove old element from container since it is now a ghost
 
@@ -218,8 +218,8 @@ function shiftElement(element, container) {
 
     for (let i = 0; i < contents.length; i++) {
         contents[i][axis] = i;                                         // assign to each element of the container its new correct position
-        const xx = state.modules[iAxis][i];
-        xx.contents[oldGhost[iAxis]] = contents[i];
+        const inverseContainer = state.modules[inverseAxis][i];
+        inverseContainer.contents[oldGhost[inverseAxis]] = contents[i];
     }
 }
 
