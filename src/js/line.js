@@ -29,4 +29,12 @@ export default class line {
             this.ghost.left = newPosition;
         }
     }
+
+    getFirst() {
+        return this.contents[0];
+    }
+
+    getLast() {
+        return this.contents[this.contents.length - 1];
+    }
 }

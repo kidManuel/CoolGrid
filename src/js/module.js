@@ -58,7 +58,9 @@ export default class module {
         if (debt !== 0) {
             //either move the full ammount, or the remainder, whichever is lower
             const totalAmmount = Math.min(Math.abs(debt), state.maxSpeed);
-            this[this.debt.direction] += totalAmmount * -1 * Math.sign(debt);
+
+            //actually move the module an ammount of the debt for this frame
+            this[this.debt.direction] += totalAmmount * Math.sign(debt);
 
             //reduce debt by ammount
             const operation = Math.sign(this.debt.ammount) * -1;

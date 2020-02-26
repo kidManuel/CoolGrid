@@ -228,11 +228,18 @@ function calculateDebt() {
     const lines = state.modules[axis];
     for (let e = 0; e < lines.length; e++) {
         const currentLine = lines[e];
-        const firstModule = currentLine.contents[0];
+        const { direction } = state.prevForce;
+        let negative, positive;
+        const moduleToCheck = direction === 1 ? currentLine.ghost : currentLine.getFirst();
 
         //get the two opposites
-        const negative = state.prevForce.isVert ? firstModule.top : firstModule.left;
-        const positive = state.prevForce.isVert ? firstModule.getBottom() : firstModule.getRight();
+        if (state.prevForce.isVert) {
+            negative = 0 - moduleToCheck.top;
+            positive = 0 - moduleToCheck.getBottom();
+        } else {
+            negative = 0 - moduleToCheck.left;
+            positive = 0 - moduleToCheck.getRight();
+        }
 
         //figure out which one is closest to 0, keeping sign
         const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
@@ -246,7 +253,6 @@ function calculateDebt() {
         }
     }
 }
-
 
 (() => {
     window.modules = state.modules;
