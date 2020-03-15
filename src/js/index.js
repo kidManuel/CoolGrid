@@ -105,9 +105,9 @@ function changeQuadrant(newQuad) {
         state.force = newQuad;
         console.log(newQuad);
     }
-    //dont calc debt on first enter
+    //dont calc offset on first enter
     if (!(state.prevForce.quadrantName === 'nullForce')) {
-        calculateDebt();
+        calculateOffset();
     }
 }
 
@@ -223,7 +223,7 @@ function shiftElement(element, container) {
     }
 }
 
-function calculateDebt() {
+function calculateOffset() {
     const axis = state.prevForce.axis;
     const lines = state.modules[axis];
     const { direction } = state.prevForce;
@@ -251,9 +251,9 @@ function calculateDebt() {
             for (let i = 0; i < currentLine.contents.length; i++) {
                 const singleModule = currentLine.contents[i];
 
-                //are we on a direction that has debt?
-                singleModule.debt[state.force.position] = 0
-                singleModule.debt[state.prevForce.position] = ammount;
+                //are we on a direction that has offset?
+                singleModule.offset[state.force.position] = 0
+                singleModule.offset[state.prevForce.position] = ammount;
             }
         }
     }

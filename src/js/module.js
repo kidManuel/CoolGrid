@@ -15,7 +15,7 @@ export default class module {
         this.linkedTo = null;
         this.domElement = this.createDomElement();
         this.setAsGhost(isGhost);
-        this.debt = {
+        this.offset = {
             top: 0,
             left: 0,
             null: 0
@@ -55,30 +55,30 @@ export default class module {
     }
 
     getStyleString() {
-        const debt = this.debt;
+        const offset = this.offset;
 
-        if (debt.top !== 0) {
-            const { top } = debt;
+        if (offset.top !== 0) {
+            const { top } = offset;
 
             //either move the full ammount, or the remainder, whichever is lower
             const totalAmmount = Math.min(Math.abs(top), state.maxSpeed);
 
-            //actually move the module an ammount of the debt for this frame
+            //actually move the module an ammount of the offset for this frame
             this.top += totalAmmount * Math.sign(top);
 
-            //reduce debt by ammount
+            //reduce offset by ammount
             const operation = Math.sign(top) * -1;
-            debt.top += totalAmmount * operation;
+            offset.top += totalAmmount * operation;
         }
 
-        if (debt.left !== 0) {
+        if (offset.left !== 0) {
 
             //same for y
-            const { left } = debt;
+            const { left } = offset;
             const totalAmmount = Math.min(Math.abs(left), state.maxSpeed);
             this.left += totalAmmount * Math.sign(left);
             const operation = Math.sign(left) * -1;
-            debt.left += totalAmmount * operation;
+            offset.left += totalAmmount * operation;
         }
 
 
