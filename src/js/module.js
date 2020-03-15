@@ -57,7 +57,7 @@ export default class module {
     getStyleString() {
         const offset = this.offset;
 
-        if (offset.top !== 0) {
+        if (offset.top) {
             const { top } = offset;
 
             //either move the full ammount, or the remainder, whichever is lower
@@ -71,7 +71,7 @@ export default class module {
             offset.top += totalAmmount * operation;
         }
 
-        if (offset.left !== 0) {
+        if (offset.left) {
 
             //same for y
             const { left } = offset;

@@ -166,6 +166,7 @@ function setNewPosition(element) {
                 }
                 break;
             }
+
         case quadrants.left:
             {
                 if (right + ammount < 0) {
@@ -247,7 +248,7 @@ function calculateOffset() {
         const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
 
 
-        if (ammount !== 0) {
+        if (ammount) {
             for (let i = 0; i < currentLine.contents.length; i++) {
                 const singleModule = currentLine.contents[i];
 
