@@ -226,10 +226,12 @@ function shiftElement(element, container) {
 function calculateDebt() {
     const axis = state.prevForce.axis;
     const lines = state.modules[axis];
+    const { direction } = state.prevForce;
+    let negative, positive;
+
+
     for (let e = 0; e < lines.length; e++) {
         const currentLine = lines[e];
-        const { direction } = state.prevForce;
-        let negative, positive;
         const moduleToCheck = direction === 1 ? currentLine.ghost : currentLine.getFirst();
 
         //get the two opposites
@@ -244,11 +246,14 @@ function calculateDebt() {
         //figure out which one is closest to 0, keeping sign
         const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
 
+
         if (ammount !== 0) {
             for (let i = 0; i < currentLine.contents.length; i++) {
                 const singleModule = currentLine.contents[i];
-                singleModule.debt.ammount = ammount;
-                singleModule.debt.direction = state.prevForce.position;
+
+                //are we on a direction that has debt?
+                singleModule.debt[state.force.position] = 0
+                singleModule.debt[state.prevForce.position] = ammount;
             }
         }
     }
