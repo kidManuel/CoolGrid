@@ -58,29 +58,37 @@ export default class module {
         const offset = this.offset;
 
         if (offset.top) {
-            const { top } = offset;
+            const { top, offsetTopThisFrame } = offset;
 
-            //either move the full ammount, or the remainder, whichever is lower
-            const totalAmmount = Math.min(Math.abs(top), state.maxSpeed);
+            //check if we have a single frame offset already decided from a past frame, else use a default
+            const ammountToMoveThisFrame = offsetTopThisFrame || (state.maxSpeed * Math.sign(top));
 
             //actually move the module an ammount of the offset for this frame
-            this.top += totalAmmount * Math.sign(top);
+            this.top += ammountToMoveThisFrame;
 
-            //reduce offset by ammount
-            const operation = Math.sign(top) * -1;
-            offset.top += totalAmmount * operation;
+            //reduce outstanding offset by ammount
+            offset.top -= ammountToMoveThisFrame;
+
+            //this is setup for next frame
+            //decide wether to move the full ammount, or all that remains, whichever is lower
+            const totalAmmount = Math.min(Math.abs(offset.top), state.maxSpeed);
+
+
+            offset.offsetTopThisFrame = totalAmmount * Math.sign(top);
         }
 
         if (offset.left) {
+            const { left, offsetLeftThisFrame } = offset;
 
-            //same for y
-            const { left } = offset;
-            const totalAmmount = Math.min(Math.abs(left), state.maxSpeed);
-            this.left += totalAmmount * Math.sign(left);
-            const operation = Math.sign(left) * -1;
-            offset.left += totalAmmount * operation;
+            const ammountToMoveThisFrame = offsetLeftThisFrame || (state.maxSpeed * Math.sign(left));
+            this.left += ammountToMoveThisFrame;
+
+            offset.left -= ammountToMoveThisFrame;
+
+            const totalAmmount = Math.min(Math.abs(offset.left), state.maxSpeed);
+
+            offset.offsetLeftThisFrame = totalAmmount * Math.sign(left);
         }
-
 
         return `#${this.id}{ top: ${this.top}px; left:${this.left}px; }`
     }

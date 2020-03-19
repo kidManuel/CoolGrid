@@ -136,69 +136,64 @@ function collectCss(updatePosition = false) {
 }
 
 function setNewPosition(element) {
-    const ammount = state.baseSpeed * state.force.direction;
+    const { quadrantName } = state.force;
+    const forceAmmount = state.baseSpeed * state.force.direction;
     const position = state.force.position;
     const { top, left } = element;
     const bottom = element.getBottom();
     const right = element.getRight();
     const { x, y } = element;
+    let outstandingAmmount = 0;
 
-    switch (state.force.quadrantName) {
-        case quadrants.bot:
-            {
-                if (top + ammount > state.containerHeight) {
-                    shiftElement(element, getLine('y', x));
-                    break;
-                }
-                if (bottom + ammount > state.containerHeight) {
-                    getLine('y', x).linkGhost(element);
-                }
-                break;
-            }
-        case quadrants.top:
-            {
-                if (bottom + ammount < 0) {
-                    shiftElement(element, getLine('y', x));
-                    break;
-                }
-                if (top + ammount < 0) {
-                    getLine('y', x).linkGhost(element);
-                }
-                break;
-            }
-
-        case quadrants.left:
-            {
-                if (right + ammount < 0) {
-                    shiftElement(element, getLine('x', y));
-                    break;
-                }
-                if (left + ammount < 0) {
-                    getLine('x', y).linkGhost(element);
-                }
-                break;
-            }
-        case quadrants.right:
-            {
-                if (left + ammount > state.containerWidth) {
-                    shiftElement(element, getLine('x', y));
-                    break;
-                }
-                if (right + ammount > state.containerWidth) {
-                    getLine('x', y).linkGhost(element);
-                }
-                break;
-
-            }
-        default:
-            break;
+    if (quadrantName === quadrants.bot || element.offset.top > 0) {
+        outstandingAmmount = element.offset.offsetTopThisFrame || forceAmmount;
+        if ((top + outstandingAmmount) >= state.containerHeight) {
+            shiftElement(element, getLine('y', x));
+        } else if ((bottom + outstandingAmmount) > state.containerHeight) {
+            getLine('y', x).linkGhost(element);
+        }
     }
-    element.applyForce(position, ammount);
+
+    if (quadrantName === quadrants.top || element.offset.top < 0) {
+        outstandingAmmount = element.offset.offsetTopThisFrame || forceAmmount;
+        if ((bottom + outstandingAmmount) <= 0) {
+            shiftElement(element, getLine('y', x));
+        } else if ((top + outstandingAmmount) < 0) {
+            getLine('y', x).linkGhost(element);
+        }
+    }
+
+    if (quadrantName === quadrants.left || element.offset.left < 0) {
+        outstandingAmmount = element.offset.offsetLeftThisFrame || forceAmmount;
+        if ((right + outstandingAmmount) <= 0) {
+            shiftElement(element, getLine('x', y));
+        } else if ((left + outstandingAmmount) < 0) {
+            getLine('x', y).linkGhost(element);
+        }
+    }
+
+    if (quadrantName === quadrants.right || element.offset.left > 0) {
+
+        outstandingAmmount = element.offset.offsetLeftThisFrame || forceAmmount;
+        if ((left + outstandingAmmount) >= state.containerWidth) {
+            shiftElement(element, getLine('x', y));
+        } else if ((right + outstandingAmmount) > state.containerWidth) {
+            getLine('x', y).linkGhost(element);
+        }
+    }
+
+
+
+    //aka if we are not on nullforce
+    if (state.force.axis) {
+        element.applyForce(position, forceAmmount);
+    }
 }
 
 function getLine(a, b) {
     return state.modules[a][b];
 }
+
 
 function shiftElement(element, container) {
     const oldGhost = container.ghost;
