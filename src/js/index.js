@@ -7,7 +7,10 @@ const {
     container,
     modulePositions,
     quadrants,
-    forces
+    forces,
+    horizontalIdentity,
+    verticalIdentity,
+    positions
 } = constants;
 
 function setup() {
@@ -40,9 +43,9 @@ function setup() {
 function prepModules() {
     //prep regualr modules
     for (let i = 0; i < state.rowsAmmount; i++) {
-        state.modules.x[i] = new line(false, i);
+        state.modules.x[i] = new line(horizontalIdentity, i);
         for (let e = 0; e < state.columnsAmmount; e++) {
-            if (i === 0) state.modules.y[e] = new line(true, e);
+            if (i === 0) state.modules.y[e] = new line(verticalIdentity, e);
             let newElement = new module(e, i);
             state.modules.x[i].contents[e] = newElement;
             state.modules.y[e].contents[i] = newElement;
@@ -71,6 +74,12 @@ function prepModules() {
 }
 
 function setListeners() {
+    const devModeToggle = document.getElementById('devModeToggle')
+
+    devModeToggle.addEventListener('click', () => {
+        container.classList.toggle('devMode', devModeToggle.checked)
+    })
+
     container.addEventListener('mouseenter', () => {
         state.shouldAnimate = true;
     })
@@ -124,6 +133,7 @@ function collectCss(updatePosition = false) {
         if (updatePosition && !singleModule.linkedTo) setNewPosition(singleModule);
         newCss += singleModule.getStyleString();
     });
+
     state.modules.x.forEach((singleLine) => {
         if (updatePosition) singleLine.setGhostPosition();
         newCss += singleLine.ghost.getStyleString();
@@ -145,44 +155,41 @@ function setNewPosition(element) {
     const { x, y } = element;
     let outstandingAmmount = 0;
 
-    if (quadrantName === quadrants.bot || element.offset.top > 0) {
-        outstandingAmmount = element.offset.offsetTopThisFrame || forceAmmount;
+    if (element.frameMovementVector['top'] > 0) {
+        outstandingAmmount = element.frameMovementVector['top'];
         if ((top + outstandingAmmount) >= state.containerHeight) {
-            shiftElement(element, getLine('y', x));
+            shiftElement(getLine('y', x), element);
         } else if ((bottom + outstandingAmmount) > state.containerHeight) {
-            getLine('y', x).linkGhost(element);
+            getLine('y', x).linkGhostToElement(element);
         }
     }
 
-    if (quadrantName === quadrants.top || element.offset.top < 0) {
-        outstandingAmmount = element.offset.offsetTopThisFrame || forceAmmount;
+    if (element.frameMovementVector['top'] < 0) {
+        outstandingAmmount = element.frameMovementVector['top'];
         if ((bottom + outstandingAmmount) <= 0) {
-            shiftElement(element, getLine('y', x));
+            shiftElement(getLine('y', x), element);
         } else if ((top + outstandingAmmount) < 0) {
-            getLine('y', x).linkGhost(element);
+            getLine('y', x).linkGhostToElement(element);
         }
     }
 
-    if (quadrantName === quadrants.left || element.offset.left < 0) {
-        outstandingAmmount = element.offset.offsetLeftThisFrame || forceAmmount;
+    if (element.frameMovementVector['left'] < 0) {
+        outstandingAmmount = element.frameMovementVector['left'] < 0;
         if ((right + outstandingAmmount) <= 0) {
-            shiftElement(element, getLine('x', y));
+            shiftElement(getLine('x', y), element);
         } else if ((left + outstandingAmmount) < 0) {
-            getLine('x', y).linkGhost(element);
+            getLine('x', y).linkGhostToElement(element);
         }
     }
 
-    if (quadrantName === quadrants.right || element.offset.left > 0) {
-
-        outstandingAmmount = element.offset.offsetLeftThisFrame || forceAmmount;
+    if (element.frameMovementVector['left'] > 0) {
+        outstandingAmmount = element.frameMovementVector['left'] < 0;
         if ((left + outstandingAmmount) >= state.containerWidth) {
-            shiftElement(element, getLine('x', y));
+            shiftElement(getLine('x', y), element);
         } else if ((right + outstandingAmmount) > state.containerWidth) {
-            getLine('x', y).linkGhost(element);
+            getLine('x', y).linkGhostToElement(element);
         }
     }
-
-
 
     //aka if we are not on nullforce
     if (state.force.axis) {
@@ -194,26 +201,16 @@ function getLine(a, b) {
     return state.modules[a][b];
 }
 
-
-function shiftElement(element, container) {
+function shiftElement(container, newGhost) {
     const oldGhost = container.ghost;
     const { contents } = container;
-    const { axis, inverseAxis } = state.force;
+    const { axis, inverseAxis } = container.data;
 
-    container.ghost = element;
-    element.setAsGhost(true, oldGhost.linkedTo);
-    oldGhost.setAsGhost(false);
+    container.promoteGhost(newGhost);
 
-    contents.splice(element[axis], 1);                                  // remove old element from container since it is now a ghost
-
-    if (state.force.direction === 1) {
-        contents.unshift(oldGhost);
-    } else {
-        contents.push(oldGhost)
-    }
-
+    // assign to each element of the container its new correct position
     for (let i = 0; i < contents.length; i++) {
-        contents[i][axis] = i;                                         // assign to each element of the container its new correct position
+        contents[i][axis] = i;
         const inverseContainer = state.modules[inverseAxis][i];
         inverseContainer.contents[oldGhost[inverseAxis]] = contents[i];
     }
@@ -242,14 +239,13 @@ function calculateOffset() {
         //figure out which one is closest to 0, keeping sign
         const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
 
-
         if (ammount) {
             for (let i = 0; i < currentLine.contents.length; i++) {
                 const singleModule = currentLine.contents[i];
 
                 //are we on a direction that has offset?
-                singleModule.offset[state.force.position] = 0
-                singleModule.offset[state.prevForce.position] = ammount;
+                singleModule.applyOffset(state.force.position, 0)
+                singleModule.applyOffset(state.prevForce.position, ammount)
             }
         }
     }

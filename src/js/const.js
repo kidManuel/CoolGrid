@@ -11,13 +11,14 @@ export const quadrants = {
 }
 
 let horizontalForce = {
+export const horizontalIdentity = {
     axis: 'x',
     isVert: false,
     position: 'left',
     inverseAxis: 'y'
 }
 
-let verticalForce = {
+export const verticalIdentity = {
     axis: 'y',
     isVert: true,
     position: 'top',
@@ -27,22 +28,22 @@ let verticalForce = {
 export const forces = {
     [quadrants.bot]: {
         quadrantName: quadrants.bot,
-        ...verticalForce,
+        ...verticalIdentity,
         direction: 1
     },
     [quadrants.top]: {
         quadrantName: quadrants.top,
-        ...verticalForce,
+        ...verticalIdentity,
         direction: -1
     },
     [quadrants.left]: {
         quadrantName: quadrants.left,
-        ...horizontalForce,
+        ...horizontalIdentity,
         direction: -1
     },
     [quadrants.right]: {
         quadrantName: quadrants.right,
-        ...horizontalForce,
+        ...horizontalIdentity,
         direction: 1
     },
     nullForce: {

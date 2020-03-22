@@ -1,7 +1,7 @@
 let state = {
     rowsAmmount: 3,
     columnsAmmount: 0,
-    baseSpeed: 4,
+    baseSpeed: 7,
     maxSpeed: 8,
     containerHeight: 0,
     containerWidth: 0,
@@ -15,7 +15,7 @@ let state = {
         x: [],
         y: []
     },
-    allModules: [] //sanity
+    allModules: []
 }
 
 export { state };

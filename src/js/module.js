@@ -20,6 +20,10 @@ export default class module {
             left: 0,
             null: 0
         }
+        this.frameMovementVector = {
+            top: 0,
+            left: 0
+        }
     }
 
     getRight() {
@@ -32,8 +36,48 @@ export default class module {
         return this.top + moduleSize;
     }
 
-    applyForce(axis, ammount) {
-        this[axis] += ammount;
+    applyForce(position, ammount) {
+        this.frameMovementVector[position] = ammount;
+    }
+
+    applyOffset(position, ammount) {
+        const { offset } = this;
+
+        if (ammount) {
+            offset[position] = ammount;
+            this.calculateCurrentFrameOffset();
+        } else {
+            offset[position] = 0;
+        }
+    }
+
+    calculateCurrentFrameOffset() {
+        const { offset, frameMovementVector } = this;
+
+        if (offset.top) {
+            const { top } = offset;
+
+            //this is setup for next frame
+            //decide wether to move the full ammount, or all that remains, whichever is lower
+            const absoluteAmmount = Math.min(Math.abs(top), state.maxSpeed);
+            const signedAmmount = absoluteAmmount * Math.sign(top);
+
+            frameMovementVector.top = signedAmmount;
+
+            //reduce outstanding offset by ammount
+            offset.top -= signedAmmount;
+        }
+
+
+        if (offset.left) {
+            const { left } = offset;
+
+            const absoluteAmmount = Math.min(Math.abs(left), state.maxSpeed);
+            const signedAmmount = absoluteAmmount * Math.sign(left);
+
+            frameMovementVector.left = signedAmmount;
+            offset.left -= signedAmmount;
+        }
     }
 
     setAsGhost(isGhost, linkTo) {
@@ -55,40 +99,9 @@ export default class module {
     }
 
     getStyleString() {
-        const offset = this.offset;
-
-        if (offset.top) {
-            const { top, offsetTopThisFrame } = offset;
-
-            //check if we have a single frame offset already decided from a past frame, else use a default
-            const ammountToMoveThisFrame = offsetTopThisFrame || (state.maxSpeed * Math.sign(top));
-
-            //actually move the module an ammount of the offset for this frame
-            this.top += ammountToMoveThisFrame;
-
-            //reduce outstanding offset by ammount
-            offset.top -= ammountToMoveThisFrame;
-
-            //this is setup for next frame
-            //decide wether to move the full ammount, or all that remains, whichever is lower
-            const totalAmmount = Math.min(Math.abs(offset.top), state.maxSpeed);
-
-
-            offset.offsetTopThisFrame = totalAmmount * Math.sign(top);
-        }
-
-        if (offset.left) {
-            const { left, offsetLeftThisFrame } = offset;
-
-            const ammountToMoveThisFrame = offsetLeftThisFrame || (state.maxSpeed * Math.sign(left));
-            this.left += ammountToMoveThisFrame;
-
-            offset.left -= ammountToMoveThisFrame;
-
-            const totalAmmount = Math.min(Math.abs(offset.left), state.maxSpeed);
-
-            offset.offsetLeftThisFrame = totalAmmount * Math.sign(left);
-        }
+        this.calculateCurrentFrameOffset();
+        this.top += this.frameMovementVector.top;
+        this.left += this.frameMovementVector.left;
 
         return `#${this.id}{ top: ${this.top}px; left:${this.left}px; }`
     }
