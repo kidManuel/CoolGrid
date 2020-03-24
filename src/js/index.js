@@ -9,8 +9,7 @@ const {
     quadrants,
     forces,
     horizontalIdentity,
-    verticalIdentity,
-    positions
+    verticalIdentity
 } = constants;
 
 function setup() {
@@ -130,8 +129,10 @@ function animationFrame() {
 function collectCss(updatePosition = false) {
     let newCss = '';
     state.allModules.forEach((singleModule) => {
-        if (updatePosition && !singleModule.linkedTo) setNewPosition(singleModule);
-        newCss += singleModule.getStyleString();
+        if (!singleModule.isGhost) {
+            if (updatePosition) setNewPosition(singleModule);
+            newCss += singleModule.getStyleString();
+        }
     });
 
     state.modules.x.forEach((singleLine) => {
@@ -146,7 +147,6 @@ function collectCss(updatePosition = false) {
 }
 
 function setNewPosition(element) {
-    const { quadrantName } = state.force;
     const forceAmmount = state.baseSpeed * state.force.direction;
     const position = state.force.position;
     const { top, left } = element;
@@ -155,6 +155,15 @@ function setNewPosition(element) {
     const { x, y } = element;
     let outstandingAmmount = 0;
 
+    //make element calculate any outstanding offsets to move
+    element.calculateCurrentFrameOffset();
+
+    //aka if we are not on nullforce
+    if (state.force.axis) {
+        element.setForce(position, forceAmmount);
+    }
+
+    //bottom
     if (element.frameMovementVector['top'] > 0) {
         outstandingAmmount = element.frameMovementVector['top'];
         if ((top + outstandingAmmount) >= state.containerHeight) {
@@ -164,6 +173,7 @@ function setNewPosition(element) {
         }
     }
 
+    //top
     if (element.frameMovementVector['top'] < 0) {
         outstandingAmmount = element.frameMovementVector['top'];
         if ((bottom + outstandingAmmount) <= 0) {
@@ -173,8 +183,9 @@ function setNewPosition(element) {
         }
     }
 
+    //left
     if (element.frameMovementVector['left'] < 0) {
-        outstandingAmmount = element.frameMovementVector['left'] < 0;
+        outstandingAmmount = element.frameMovementVector['left'];
         if ((right + outstandingAmmount) <= 0) {
             shiftElement(getLine('x', y), element);
         } else if ((left + outstandingAmmount) < 0) {
@@ -182,8 +193,10 @@ function setNewPosition(element) {
         }
     }
 
+
+    //right
     if (element.frameMovementVector['left'] > 0) {
-        outstandingAmmount = element.frameMovementVector['left'] < 0;
+        outstandingAmmount = element.frameMovementVector['left'];
         if ((left + outstandingAmmount) >= state.containerWidth) {
             shiftElement(getLine('x', y), element);
         } else if ((right + outstandingAmmount) > state.containerWidth) {
@@ -191,10 +204,6 @@ function setNewPosition(element) {
         }
     }
 
-    //aka if we are not on nullforce
-    if (state.force.axis) {
-        element.applyForce(position, forceAmmount);
-    }
 }
 
 function getLine(a, b) {

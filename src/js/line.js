@@ -36,6 +36,7 @@ export default class line {
 
     promoteGhost(newGhost) {
         const { ghost: promotedGhost } = this;
+        const { position } = this.data;
         const isCurrentMovementPositive = newGhost.frameMovementVector[this.data.position] > 0
 
         // remove old element from container since it is now a ghost
@@ -51,6 +52,7 @@ export default class line {
         newGhost.setAsGhost(true, elementToLink);
         this.setGhost(newGhost);
         promotedGhost.setAsGhost(false);
+        promotedGhost.frameMovementVector[position] = newGhost.frameMovementVector[position];
     }
 
     getFirst() {

@@ -10,7 +10,11 @@ export const quadrants = {
     right: 'RIGHT'
 }
 
-let horizontalForce = {
+export const positions = {
+    left: 'left',
+    top: 'top'
+}
+
 export const horizontalIdentity = {
     axis: 'x',
     isVert: false,

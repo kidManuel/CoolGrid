@@ -36,8 +36,13 @@ export default class module {
         return this.top + moduleSize;
     }
 
-    applyForce(position, ammount) {
+    setForce(position, ammount) {
         this.frameMovementVector[position] = ammount;
+    }
+
+    resetMovementVector() {
+        this.setForce('top', 0);
+        this.setForce('left', 0);
     }
 
     applyOffset(position, ammount) {
@@ -45,14 +50,13 @@ export default class module {
 
         if (ammount) {
             offset[position] = ammount;
-            this.calculateCurrentFrameOffset();
         } else {
             offset[position] = 0;
         }
     }
 
     calculateCurrentFrameOffset() {
-        const { offset, frameMovementVector } = this;
+        const { offset } = this;
 
         if (offset.top) {
             const { top } = offset;
@@ -62,7 +66,7 @@ export default class module {
             const absoluteAmmount = Math.min(Math.abs(top), state.maxSpeed);
             const signedAmmount = absoluteAmmount * Math.sign(top);
 
-            frameMovementVector.top = signedAmmount;
+            this.setForce('top', signedAmmount);
 
             //reduce outstanding offset by ammount
             offset.top -= signedAmmount;
@@ -75,7 +79,7 @@ export default class module {
             const absoluteAmmount = Math.min(Math.abs(left), state.maxSpeed);
             const signedAmmount = absoluteAmmount * Math.sign(left);
 
-            frameMovementVector.left = signedAmmount;
+            this.setForce('left', signedAmmount);
             offset.left -= signedAmmount;
         }
     }
@@ -98,10 +102,11 @@ export default class module {
         return newElement;
     }
 
+
     getStyleString() {
-        this.calculateCurrentFrameOffset();
         this.top += this.frameMovementVector.top;
         this.left += this.frameMovementVector.left;
+        this.resetMovementVector();
 
         return `#${this.id}{ top: ${this.top}px; left:${this.left}px; }`
     }
