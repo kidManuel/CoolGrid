@@ -12,9 +12,10 @@ export default class line {
     linkGhostToElement(element) {
         const { ghost } = this;
         ghost.linkedTo = element;
+        ghost.content = element.content;
     }
 
-    setGhost(element) {
+    setLineGhost(element) {
         this.ghost = element;
     }
 
@@ -50,7 +51,7 @@ export default class line {
 
         const elementToLink = isCurrentMovementPositive ? this.getLast() : this.getFirst();
         newGhost.setAsGhost(true, elementToLink);
-        this.setGhost(newGhost);
+        this.setLineGhost(newGhost);
         promotedGhost.setAsGhost(false);
         promotedGhost.frameMovementVector[position] = newGhost.frameMovementVector[position];
     }

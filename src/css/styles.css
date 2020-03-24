@@ -4,40 +4,54 @@ html {
     width: 100%;
     text-align: center;
     position: relative;
-}
-
-#visualContainer {
-    margin: 200px auto;
-    border: solid 3px black;
-    position: relative;
-    width: 50vw;
-    height: 50vh;
-    background-image: url('../guide-01.png');
-    background-size: 100% 100%;
+    background: black;
+    color: white;
     overflow: hidden;
 }
 
-#visualContainer.devMode {
+#visualContainer {
+    margin: 10vh auto;
+    position: relative;
+    height: 80vh;
+    overflow: hidden;
+}
+
+.devMode #visualContainer {
     overflow: visible !important;
+    border: solid 3px white;
+}
+
+.devMode #visualContainer::after {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-image: url('/guide-01.png');
+    background-size: 100% 100%;
+    display: inline-block;
+    content: '';
+    z-index: 2;
 }
 
 .module {
-    color: white;
     position: absolute;
-    border: solid 1px white;
-    background-color: rgba(.3, .3, .3, .5);
     box-sizing: border-box;
 }
 
-#eventContainer {
-    position: absolute;
-    top: 20px;
-    border: solid 2px red;
-    margin: auto;
-    left: 0;
-    right: 0;
+.module:after {
+    font-family: 'Major Mono Display', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
-.ghost {
-    background-color: rgba(255, 0, 0, 0.4);
+.devMode .module {
+    border: dashed 1px white;
+}
+
+.devMode .module.ghost {
+    border: solid 1px rgb(255, 0, 0, 0.4);
 }

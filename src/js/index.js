@@ -4,31 +4,38 @@ import * as constants from './const';
 import { state } from './state';
 
 const {
+    body,
+    devModeToggle,
     container,
     modulePositions,
     quadrants,
     forces,
     horizontalIdentity,
-    verticalIdentity
+    verticalIdentity,
+    message
 } = constants;
 
 function setup() {
+    toggleDevMode();
+    state.rowsAmmount = message.length;
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
-    state.columnsAmmount = Math.floor(container.offsetWidth / state.moduleSize);
+    state.columnsAmmount = message.reduce((acc, curr) => Math.max(acc.length || acc, curr.length || curr));
     state.containerWidth = state.columnsAmmount * state.moduleSize;
     state.containerRatio = state.containerHeight / state.containerWidth;
     container.style.height = `${state.containerHeight}px`;
     container.style.width = `${state.containerWidth}px`;
 
-    let width = container.offsetWidth;
-    state.columnsAmmount = Math.floor((width * 1.1) / state.moduleSize);
-
+    const { moduleSize } = state;
     const baseCss = `
     .module {
-        width: ${state.moduleSize}px;
-        height: ${state.moduleSize}px;
-    }`
+        width: ${moduleSize}px;
+        height: ${moduleSize}px;
+    }
+    .module:after {
+        font-size: ${moduleSize}px;
+    }
+    `
     document.getElementById('baseCss').textContent = baseCss;
 
     state.force = forces.nullForce;
@@ -43,9 +50,12 @@ function prepModules() {
     //prep regualr modules
     for (let i = 0; i < state.rowsAmmount; i++) {
         state.modules.x[i] = new line(horizontalIdentity, i);
+
         for (let e = 0; e < state.columnsAmmount; e++) {
+
             if (i === 0) state.modules.y[e] = new line(verticalIdentity, e);
-            let newElement = new module(e, i);
+
+            let newElement = new module(e, i, false, message[i][e]);
             state.modules.x[i].contents[e] = newElement;
             state.modules.y[e].contents[i] = newElement;
             container.appendChild(newElement.domElement);
@@ -72,11 +82,13 @@ function prepModules() {
     }
 }
 
-function setListeners() {
-    const devModeToggle = document.getElementById('devModeToggle')
+function toggleDevMode() {
+    body.classList.toggle('devMode', devModeToggle.checked);
+}
 
+function setListeners() {
     devModeToggle.addEventListener('click', () => {
-        container.classList.toggle('devMode', devModeToggle.checked)
+        toggleDevMode();
     })
 
     container.addEventListener('mouseenter', () => {
@@ -103,7 +115,6 @@ function setListeners() {
             }
         }
     })
-
 }
 
 function changeQuadrant(newQuad) {

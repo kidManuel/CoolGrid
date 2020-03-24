@@ -4,7 +4,7 @@ let hash = 0;
 const getNewHash = () => hash++;
 
 export default class module {
-    constructor(x, y, isGhost = false) {
+    constructor(x, y, isGhost = false, content) {
         let { moduleSize, columnsAmmount } = state;
         this.x = x;
         this.y = y;
@@ -24,6 +24,7 @@ export default class module {
             top: 0,
             left: 0
         }
+        this.content = content;
     }
 
     getRight() {
@@ -95,19 +96,32 @@ export default class module {
         let newElement = document.createElement("div");
         newElement.className = "module";
         newElement.id = this.id;
-        newElement.innerText = `
+        /*newElement.innerText = `
         #${this.number}
         x: ${x}, y:${y}
-        `;
+        `;*/
         return newElement;
     }
 
+    getContent() {
+        switch (typeof this.content) {
+            case 'string':
+                return this.getStringContent();
+            default:
+                return ''
+        }
+    }
+
+    getStringContent() {
+        const { content } = this;
+        return `} #${this.id}:after {content: '${content}'`
+    }
 
     getStyleString() {
         this.top += this.frameMovementVector.top;
         this.left += this.frameMovementVector.left;
         this.resetMovementVector();
 
-        return `#${this.id}{ top: ${this.top}px; left:${this.left}px; }`
+        return `#${this.id}{ top: ${this.top}px; left:${this.left}px; ${this.getContent()}}`
     }
 }

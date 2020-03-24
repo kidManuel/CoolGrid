@@ -2,6 +2,7 @@ export const content = 'POSSIMADESIGNBOUTIQUEMODERNINTERACTIONIDENTITY';
 export const container = document.getElementById('visualContainer');
 export const modulePositions = document.getElementById('modulePositions');
 export const body = document.getElementsByTagName('body')[0];
+export const devModeToggle = document.getElementById('devModeToggle')
 
 export const quadrants = {
     bot: 'BOTTOM',
@@ -59,3 +60,13 @@ export const forces = {
         direction: null
     }
 }
+
+export const message = [
+    'all',
+    'things',
+    'good',
+    'flow',
+    'into',
+    'the',
+    'city'
+]
