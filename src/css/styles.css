@@ -9,6 +9,10 @@ html {
     overflow: hidden;
 }
 
+body.devMode {
+    background: white;
+}
+
 #visualContainer {
     margin: 10vh auto;
     position: relative;
@@ -18,7 +22,7 @@ html {
 
 .devMode #visualContainer {
     overflow: visible !important;
-    border: solid 3px white;
+    outline: solid 4px green;
 }
 
 .devMode #visualContainer::after {
@@ -49,9 +53,10 @@ html {
 }
 
 .devMode .module {
-    border: dashed 1px white;
+    outline: dashed 1px white;
+    background: rgba(0, 0, 0, 0.3)
 }
 
 .devMode .module.ghost {
-    border: solid 1px rgb(255, 0, 0, 0.4);
+    outline: solid 1px rgb(255, 0, 0, 0.4);
 }

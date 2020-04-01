@@ -9,7 +9,7 @@ export default class module {
         this.x = x;
         this.y = y;
         this.number = y * columnsAmmount + x;
-        this.id = `m${getNewHash()}${isGhost ? 'g' : ''}`;
+        this.id = `x${this.x}y${this.y}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
         this.linkedTo = null;
@@ -92,14 +92,9 @@ export default class module {
     }
 
     createDomElement() {
-        const { x, y } = this;
         let newElement = document.createElement("div");
         newElement.className = "module";
         newElement.id = this.id;
-        /*newElement.innerText = `
-        #${this.number}
-        x: ${x}, y:${y}
-        `;*/
         return newElement;
     }
 

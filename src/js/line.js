@@ -12,7 +12,6 @@ export default class line {
     linkGhostToElement(element) {
         const { ghost } = this;
         ghost.linkedTo = element;
-        ghost.content = element.content;
     }
 
     setLineGhost(element) {
@@ -20,41 +19,54 @@ export default class line {
     }
 
     setGhostPosition() {
+        const { ghost } = this;
+        const { linkedTo } = ghost;
         if (this.data.isVert) {
-            const { top } = this.ghost.linkedTo;
+            const { top } = linkedTo;
             const { containerHeight } = state;
-            const operation = top === 0 ? 1 : Math.sign(top) * -1;
+            const operation = (Math.sign(top) * -1) || 1;
             const newPosition = top + (containerHeight * operation);
-            this.ghost.top = newPosition;
+            ghost.top = newPosition;
+            ghost.left = ghost.linkedTo.left;
         } else {
-            const { left } = this.ghost.linkedTo;
+            const { left } = ghost.linkedTo;
             const { containerWidth } = state;
-            const operation = Math.sign(left) * -1 || 1;
+            let operation = (Math.sign(left) * -1) || 1;
             const newPosition = left + (containerWidth * operation);
-            this.ghost.left = newPosition;
+            ghost.left = newPosition;
+            ghost.top = ghost.linkedTo.top;
         }
+        ghost.content = linkedTo.content;
     }
 
     promoteGhost(newGhost) {
-        const { ghost: promotedGhost } = this;
-        const { position } = this.data;
+        //if ((this.data.isVert === false) && (this.number === 0)) debugger;
+        const { ghost: promotedGhost, contents } = this;
+        const { position, axis } = this.data;
         const isCurrentMovementPositive = newGhost.frameMovementVector[this.data.position] > 0
 
         // remove old element from container since it is now a ghost
-        this.contents.splice(newGhost[this.data.axis], 1);
+        contents.splice(newGhost[this.data.axis], 1);
 
         if (isCurrentMovementPositive) {
-            this.contents.unshift(promotedGhost);
+            contents.unshift(promotedGhost);
         } else {
-            this.contents.push(promotedGhost)
+            contents.push(promotedGhost)
         }
 
         const elementToLink = isCurrentMovementPositive ? this.getLast() : this.getFirst();
         newGhost.setAsGhost(true, elementToLink);
+
         this.setLineGhost(newGhost);
         promotedGhost.setAsGhost(false);
         promotedGhost.frameMovementVector[position] = newGhost.frameMovementVector[position];
+
+        // Set correct axis number for each module in this line.
+        contents.forEach((singleModule, order) => {
+            singleModule[axis] = order;
+        })
     }
+
 
     getFirst() {
         return this.contents[0];

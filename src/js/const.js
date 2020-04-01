@@ -1,4 +1,3 @@
-export const content = 'POSSIMADESIGNBOUTIQUEMODERNINTERACTIONIDENTITY';
 export const container = document.getElementById('visualContainer');
 export const modulePositions = document.getElementById('modulePositions');
 export const body = document.getElementsByTagName('body')[0];

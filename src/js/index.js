@@ -16,7 +16,6 @@ const {
 } = constants;
 
 function setup() {
-    toggleDevMode();
     state.rowsAmmount = message.length;
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
@@ -140,10 +139,9 @@ function animationFrame() {
 function collectCss(updatePosition = false) {
     let newCss = '';
     state.allModules.forEach((singleModule) => {
-        if (!singleModule.isGhost) {
-            if (updatePosition) setNewPosition(singleModule);
-            newCss += singleModule.getStyleString();
-        }
+        if (!singleModule.isGhost && updatePosition) setNewPosition(singleModule);
+        //check twice in case the module gets turned into a ghost via setNewPosition
+        if (!singleModule.isGhost) newCss += singleModule.getStyleString();
     });
 
     state.modules.x.forEach((singleLine) => {
@@ -275,6 +273,7 @@ function calculateOffset() {
     window.modules = state.modules;
     window.state = state;
     setup();
+    toggleDevMode();
     requestAnimationFrame(animationFrame);
 })()
 
