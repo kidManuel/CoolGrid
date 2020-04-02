@@ -21,18 +21,26 @@ export default class line {
     setGhostPosition() {
         const { ghost } = this;
         const { linkedTo } = ghost;
+
+        // Here we calculate the position of the ghost, looks messy but
+        //essentially the ghost has to be on the opposite side of the real module
         if (this.data.isVert) {
-            const { top } = linkedTo;
+            const { top, frameMovementVector } = linkedTo;
             const { containerHeight } = state;
+
+            // We decide if we have to substract or add the height of the container
+            // to the top value of the ghost. Use positive as a default for the first frame of animation.
             const operation = (Math.sign(top) * -1) || 1;
-            const newPosition = top + (containerHeight * operation);
+
+            // And we add however much the real module is going to move this frame.
+            const newPosition = top + (containerHeight * operation) + frameMovementVector.top;
             ghost.top = newPosition;
             ghost.left = ghost.linkedTo.left;
         } else {
-            const { left } = ghost.linkedTo;
+            const { left, frameMovementVector } = ghost.linkedTo;
             const { containerWidth } = state;
             let operation = (Math.sign(left) * -1) || 1;
-            const newPosition = left + (containerWidth * operation);
+            const newPosition = left + (containerWidth * operation) + frameMovementVector.left;
             ghost.left = newPosition;
             ghost.top = ghost.linkedTo.top;
         }
@@ -40,12 +48,11 @@ export default class line {
     }
 
     promoteGhost(newGhost) {
-        //if ((this.data.isVert === false) && (this.number === 0)) debugger;
         const { ghost: promotedGhost, contents } = this;
         const { position, axis } = this.data;
         const isCurrentMovementPositive = newGhost.frameMovementVector[this.data.position] > 0
 
-        // remove old element from container since it is now a ghost
+        // Remove old element from container since it is now a ghost
         contents.splice(newGhost[this.data.axis], 1);
 
         if (isCurrentMovementPositive) {

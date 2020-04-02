@@ -62,14 +62,14 @@ export default class module {
         if (offset.top) {
             const { top } = offset;
 
-            //this is setup for next frame
-            //decide wether to move the full ammount, or all that remains, whichever is lower
+            // This is setup for next frame
+            // decide wether to move the full ammount, or all that remains, whichever is lower
             const absoluteAmmount = Math.min(Math.abs(top), state.maxSpeed);
             const signedAmmount = absoluteAmmount * Math.sign(top);
 
             this.setForce('top', signedAmmount);
 
-            //reduce outstanding offset by ammount
+            // Reduce outstanding offset by ammount
             offset.top -= signedAmmount;
         }
 
