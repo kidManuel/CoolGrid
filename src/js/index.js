@@ -138,7 +138,6 @@ function animationFrame() {
 }
 
 function setNewPositions() {
-    // Find if there is anyways to not have two allModules
     state.allModules.forEach((singleModule) => {
         if (!singleModule.isGhost) setModulePosition(singleModule);
     });
@@ -203,7 +202,6 @@ function setModulePosition(element) {
 
     // Right
     if (element.frameMovementVector['left'] > 0) {
-        if ((element.id === 'x2y0')) debugger;
         outstandingAmmount = element.frameMovementVector['left'];
         if ((left + outstandingAmmount) >= state.containerWidth) {
             shiftElement(getLine('x', y), element);
