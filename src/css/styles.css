@@ -53,7 +53,7 @@ body.devMode {
 }
 
 .devMode .module {
-    outline: dashed 1px white;
+    outline: dashed 1px purple;
     background: rgba(0, 0, 0, 0.3)
 }
 

@@ -67,6 +67,7 @@ export default class line {
         this.setLineGhost(newGhost);
         promotedGhost.setAsGhost(false);
         promotedGhost.frameMovementVector[position] = newGhost.frameMovementVector[position];
+        promotedGhost.offset[position] = newGhost.offset[position];
 
         // Set correct axis number for each module in this line.
         contents.forEach((singleModule, order) => {

@@ -121,7 +121,6 @@ function changeQuadrant(newQuad) {
     if (currentQuad.quadrantName !== newQuad.quadrantName) {
         state.prevForce = state.force;
         state.force = newQuad;
-        console.log(newQuad);
     }
     // Dont calc offset on first enter
     if (!(state.prevForce.quadrantName === 'nullForce')) {
