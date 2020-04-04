@@ -150,23 +150,13 @@ function setNewPositions() {
 }
 
 function setModulePosition(element) {
-    const forceAmmount = state.baseSpeed * state.force.direction;
-    const position = state.force.position;
     const { top, left } = element;
     const bottom = element.getBottom();
     const right = element.getRight();
     const { x, y } = element;
     let outstandingAmmount = 0;
 
-    element.resetMovementVector();
-
-    // Make element calculate any outstanding offsets to move
-    element.calculateCurrentFrameOffset();
-
-    // Aka if we are not on nullforce
-    if (state.force.axis) {
-        element.setForce(position, forceAmmount);
-    }
+    element.compileFrameMovementVector();
 
     // Bottom
     if (element.frameMovementVector['top'] > 0) {

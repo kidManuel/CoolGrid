@@ -85,6 +85,22 @@ export default class module {
         }
     }
 
+    compileFrameMovementVector() {
+        const position = state.force.position;
+        const forceAmmount = state.baseSpeed * state.force.direction;
+
+        this.resetMovementVector();
+
+        // Make element calculate any outstanding offsets to move
+        this.calculateCurrentFrameOffset();
+
+        // Aka if we are not on nullforce
+        if (state.force.axis) {
+            this.setForce(position, forceAmmount);
+        }
+    }
+
+
     setAsGhost(isGhost, linkTo) {
         this.isGhost = isGhost;
         this.linkedTo = isGhost && linkTo ? linkTo : null;

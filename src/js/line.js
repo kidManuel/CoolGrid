@@ -49,7 +49,7 @@ export default class line {
 
     promoteGhost(newGhost) {
         const { ghost: promotedGhost, contents } = this;
-        const { position, axis } = this.data;
+        const { axis } = this.data;
         const isCurrentMovementPositive = newGhost.frameMovementVector[this.data.position] > 0
 
         // Remove old element from container since it is now a ghost
@@ -61,18 +61,18 @@ export default class line {
             contents.push(promotedGhost)
         }
 
+        // Set correct axis number for each module in this line.
+        contents.forEach((singleModule, order) => {
+            singleModule[axis] = order;
+        })
+
         const elementToLink = isCurrentMovementPositive ? this.getLast() : this.getFirst();
         newGhost.setAsGhost(true, elementToLink);
 
         this.setLineGhost(newGhost);
         promotedGhost.setAsGhost(false);
-        promotedGhost.frameMovementVector[position] = newGhost.frameMovementVector[position];
-        promotedGhost.offset[position] = newGhost.offset[position];
-
-        // Set correct axis number for each module in this line.
-        contents.forEach((singleModule, order) => {
-            singleModule[axis] = order;
-        })
+        promotedGhost.offset = newGhost.offset;
+        promotedGhost.compileFrameMovementVector()
     }
 
 
