@@ -21,6 +21,8 @@ export default class line {
     setGhostPosition() {
         const { ghost } = this;
         const { linkedTo } = ghost;
+        if (ghost.id === "x2y2") debugger
+
 
         // Here we calculate the position of the ghost, looks messy but
         //essentially the ghost has to be on the opposite side of the real module
@@ -35,14 +37,15 @@ export default class line {
             // And we add however much the real module is going to move this frame.
             const newPosition = top + (containerHeight * operation) + frameMovementVector.top;
             ghost.top = newPosition;
-            ghost.left = ghost.linkedTo.left;
+            ghost.left = ghost.linkedTo.left + frameMovementVector.left;
         } else {
             const { left, frameMovementVector } = ghost.linkedTo;
             const { containerWidth } = state;
             let operation = (Math.sign(left) * -1) || 1;
             const newPosition = left + (containerWidth * operation) + frameMovementVector.left;
             ghost.left = newPosition;
-            ghost.top = ghost.linkedTo.top;
+            ghost.top = ghost.linkedTo.top + frameMovementVector.top;
+
         }
         ghost.content = linkedTo.content;
     }
@@ -71,8 +74,9 @@ export default class line {
 
         this.setLineGhost(newGhost);
         promotedGhost.setAsGhost(false);
-        promotedGhost.offset = newGhost.offset;
-        promotedGhost.compileFrameMovementVector()
+        promotedGhost.frameMovementVector = { ...newGhost.frameMovementVector };
+        newGhost.resetMovementVector();
+        promotedGhost.noCompile = true;
     }
 
 

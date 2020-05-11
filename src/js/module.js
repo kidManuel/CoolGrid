@@ -5,10 +5,10 @@ const getNewHash = () => hash++;
 
 export default class module {
     constructor(x, y, isGhost = false, content) {
-        let { moduleSize, columnsAmmount } = state;
+        let { moduleSize } = state;
         this.x = x;
         this.y = y;
-        this.number = y * columnsAmmount + x;
+        this.number = getNewHash();
         this.id = `x${this.x}y${this.y}${isGhost ? 'g' : ''}`;
         this.top = y * moduleSize;
         this.left = x * moduleSize;
@@ -25,6 +25,7 @@ export default class module {
             left: 0
         }
         this.content = content;
+        this.noCompile = false;
     }
 
     getRight() {
@@ -89,8 +90,6 @@ export default class module {
         const position = state.force.position;
         const forceAmmount = state.baseSpeed * state.force.direction;
 
-        this.resetMovementVector();
-
         // Make element calculate any outstanding offsets to move
         this.calculateCurrentFrameOffset();
 
@@ -99,7 +98,6 @@ export default class module {
             this.setForce(position, forceAmmount);
         }
     }
-
 
     setAsGhost(isGhost, linkTo) {
         this.isGhost = isGhost;

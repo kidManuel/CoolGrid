@@ -22,6 +22,7 @@ class cssHandler {
     getAllCss() {
         state.allModules.forEach((singleModule) => {
             this.getModuleCss(singleModule.getStyleString());
+            singleModule.noCompile = false;
         });
         this.applyCssToDom();
         this.resetFrameCss();

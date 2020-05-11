@@ -156,49 +156,53 @@ function setModulePosition(element) {
     const { x, y } = element;
     let outstandingAmmount = 0;
 
-    element.compileFrameMovementVector();
+    if (element.noCompile) {
+        element.noCompile = false;
+    } else {
+        element.compileFrameMovementVector();
 
-    // Bottom
-    if (element.frameMovementVector['top'] > 0) {
-        outstandingAmmount = element.frameMovementVector['top'];
-        if ((top + outstandingAmmount) >= state.containerHeight) {
-            shiftElement(getLine('y', x), element);
-        } else if ((bottom + outstandingAmmount) > state.containerHeight) {
-            getLine('y', x).linkGhostToElement(element);
+        // Bottoms
+        if (element.frameMovementVector['top'] > 0) {
+            outstandingAmmount = element.frameMovementVector['top'];
+            if ((top + outstandingAmmount) >= state.containerHeight) {
+                shiftElement(getLine('y', x), element);
+            } else if ((bottom + outstandingAmmount) > state.containerHeight) {
+                getLine('y', x).linkGhostToElement(element);
+            }
         }
-    }
 
-    // Top
-    if (element.frameMovementVector['top'] < 0) {
-        outstandingAmmount = element.frameMovementVector['top'];
-        if ((bottom + outstandingAmmount) <= 0) {
-            shiftElement(getLine('y', x), element);
-        } else if ((top + outstandingAmmount) < 0) {
-            getLine('y', x).linkGhostToElement(element);
+        // Top
+        if (element.frameMovementVector['top'] < 0) {
+            outstandingAmmount = element.frameMovementVector['top'];
+            if ((bottom + outstandingAmmount) <= 0) {
+                shiftElement(getLine('y', x), element);
+            } else if ((top + outstandingAmmount) < 0) {
+                getLine('y', x).linkGhostToElement(element);
+            }
         }
-    }
 
-    // Left
-    if (element.frameMovementVector['left'] < 0) {
-        outstandingAmmount = element.frameMovementVector['left'];
-        if ((right + outstandingAmmount) <= 0) {
-            shiftElement(getLine('x', y), element);
-        } else if ((left + outstandingAmmount) < 0) {
-            getLine('x', y).linkGhostToElement(element);
+        // Left
+        if (element.frameMovementVector['left'] < 0) {
+            outstandingAmmount = element.frameMovementVector['left'];
+            if ((right + outstandingAmmount) <= 0) {
+                shiftElement(getLine('x', y), element);
+            } else if ((left + outstandingAmmount) < 0) {
+                getLine('x', y).linkGhostToElement(element);
+            }
         }
-    }
 
 
-    // Right
-    if (element.frameMovementVector['left'] > 0) {
-        outstandingAmmount = element.frameMovementVector['left'];
-        if ((left + outstandingAmmount) >= state.containerWidth) {
-            shiftElement(getLine('x', y), element);
-        } else if ((right + outstandingAmmount) > state.containerWidth) {
-            getLine('x', y).linkGhostToElement(element);
+        // Right
+        if (element.frameMovementVector['left'] > 0) {
+            outstandingAmmount = element.frameMovementVector['left'];
+            if ((left + outstandingAmmount) >= state.containerWidth) {
+                shiftElement(getLine('x', y), element);
+            } else if ((right + outstandingAmmount) > state.containerWidth) {
+                getLine('x', y).linkGhostToElement(element);
+            }
         }
-    }
 
+    }
 }
 
 function getLine(a, b) {
