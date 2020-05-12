@@ -59,7 +59,6 @@ export default class module {
 
     calculateCurrentFrameOffset() {
         const { offset } = this;
-
         if (offset.top) {
             const { top } = offset;
 

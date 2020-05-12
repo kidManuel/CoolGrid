@@ -21,8 +21,6 @@ export default class line {
     setGhostPosition() {
         const { ghost } = this;
         const { linkedTo } = ghost;
-        if (ghost.id === "x2y2") debugger
-
 
         // Here we calculate the position of the ghost, looks messy but
         //essentially the ghost has to be on the opposite side of the real module
@@ -76,6 +74,8 @@ export default class line {
         promotedGhost.setAsGhost(false);
         promotedGhost.frameMovementVector = { ...newGhost.frameMovementVector };
         newGhost.resetMovementVector();
+        newGhost.offset.x = 0;
+        newGhost.offset.y = 0;
         promotedGhost.noCompile = true;
     }
 

@@ -233,19 +233,24 @@ function calculateOffset() {
 
     for (let e = 0; e < lines.length; e++) {
         const currentLine = lines[e];
-        const moduleToCheck = direction === 1 ? currentLine.ghost : currentLine.getFirst();
 
-        // Get the two opposites
-        if (state.prevForce.isVert) {
-            negative = 0 - moduleToCheck.top;
-            positive = 0 - moduleToCheck.getBottom();
-        } else {
-            negative = 0 - moduleToCheck.left;
-            positive = 0 - moduleToCheck.getRight();
-        }
+        const moduleToCheck = currentLine.ghost;
 
-        // Figure out which one is closest to 0, keeping sign
-        const ammount = Math.abs(negative) < Math.abs(positive) ? negative : positive;
+        const negative = state.prevForce.isVert ? moduleToCheck.top : moduleToCheck.left
+        const positive = state.prevForce.isVert ? moduleToCheck.getBottom() : moduleToCheck.getRight();
+        const containerSize = state.prevForce.isVert ? state.containerHeight : state.containerWidth;
+
+        const possibleValues = [
+            0 - negative,
+            0 - positive,
+            containerSize - negative,
+            containerSize - positive,
+        ]
+
+        // find smallest absolute size
+        const ammount = possibleValues.sort((a, b) => {
+            return Math.abs(a) > Math.abs(b) ? 1 : -1
+        })[0];
 
         if (ammount) {
             for (let i = 0; i < currentLine.contents.length; i++) {
