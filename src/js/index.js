@@ -227,9 +227,6 @@ function shiftElement(container, newGhost) {
 function calculateOffset() {
     const axis = state.prevForce.axis;
     const lines = state.modules[axis];
-    const { direction } = state.prevForce;
-    let negative, positive;
-
 
     for (let e = 0; e < lines.length; e++) {
         const currentLine = lines[e];
