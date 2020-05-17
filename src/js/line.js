@@ -78,4 +78,8 @@ export default class line {
     getLast() {
         return this.contents[this.contents.length - 1];
     }
+
+    getSpeed() {
+        return this.speed;
+    }
 }

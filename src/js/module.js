@@ -4,7 +4,7 @@ let hash = 0;
 const getNewHash = () => hash++;
 
 export default class module {
-    constructor(x, y, isGhost = false, content) {
+    constructor(x, y, isGhost = false, content, getHorizontalSpeed, getVerticalSpeed) {
         let { moduleSize } = state;
         this.x = x;
         this.y = y;
@@ -25,6 +25,8 @@ export default class module {
             left: 0
         }
         this.content = content;
+        this.getHorizontalSpeed = getHorizontalSpeed;
+        this.getVerticalSpeed = getVerticalSpeed;
     }
 
     getRight() {
@@ -85,14 +87,14 @@ export default class module {
     }
 
     compileFrameMovementVector() {
-        const position = state.force.position;
-        const forceAmmount = state.baseSpeed * state.force.direction;
-
         // Make element calculate any outstanding offsets to move
         this.calculateCurrentFrameOffset();
 
         // Aka if we are not on nullforce
         if (state.force.axis) {
+            const position = state.force.position;
+            const forceAmmount = state.force.isVert ? this.getVerticalSpeed() : this.getHorizontalSpeed();
+
             this.setForce(position, forceAmmount);
         }
     }

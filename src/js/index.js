@@ -3,7 +3,7 @@ import line from './line';
 import cssHandler from './cssHandler';
 import * as constants from './const';
 import { state } from './state';
-import { pyth, map } from './mathUtil';
+import { pyth, map, distance } from './mathUtil';
 
 const {
     body,
@@ -18,13 +18,16 @@ const {
 
 function setup() {
     state.rowsAmmount = message.length;
+    state.columnsAmmount = message.reduce((acc, curr) => Math.max(acc.length || acc, curr.length || curr));
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
-    state.columnsAmmount = message.reduce((acc, curr) => Math.max(acc.length || acc, curr.length || curr));
-    state.center.centerX = state.containerWidth / 2;
-    state.center.centerY = state.containerHeight / 2;
-    state.maxPossibleDistance = pyth(state.centerX, state.centerY);
     state.containerWidth = state.columnsAmmount * state.moduleSize;
+
+    state.center.X = state.containerWidth / 2;
+    state.center.Y = state.containerHeight / 2;
+
+    state.maxPossibleDistance = pyth(state.center.X, state.center.Y);
+
     state.containerRatio = state.containerHeight / state.containerWidth;
     container.style.height = `${state.containerHeight}px`;
     container.style.width = `${state.containerWidth}px`;
@@ -52,15 +55,27 @@ function setup() {
 function prepModules() {
     // Prep regualr modules
     for (let i = 0; i < state.rowsAmmount; i++) {
-        state.modules.x[i] = new line(horizontalIdentity, i);
+        const currentHorizontalLine = new line(horizontalIdentity, i);
+        state.modules.x.push(currentHorizontalLine);
 
         for (let e = 0; e < state.columnsAmmount; e++) {
 
-            if (i === 0) state.modules.y[e] = new line(verticalIdentity, e);
+            if (i === 0) {
+                state.modules.y.push(new line(verticalIdentity, e));
+            }
+            const currentVerticalLine = state.modules.y[e];
 
-            let newElement = new module(e, i, false, message[i][e]);
-            state.modules.x[i].contents[e] = newElement;
-            state.modules.y[e].contents[i] = newElement;
+            let newElement = new module(
+                e,
+                i,
+                false,
+                message[i][e],
+                currentHorizontalLine.getSpeed.bind(currentHorizontalLine),
+                currentVerticalLine.getSpeed.bind(currentVerticalLine)
+            );
+
+            currentHorizontalLine.contents.push(newElement);
+            currentVerticalLine.contents.push(newElement);
             container.appendChild(newElement.domElement);
             state.allModules.push(newElement);
         }
@@ -95,14 +110,18 @@ function setListeners() {
     })
     container.addEventListener('mouseenter', () => {
         state.shouldAnimate = true;
+        state.inBounds = true;
     })
     container.addEventListener('mouseleave', () => {
         changeQuadrant(forces.nullForce);
+        state.inBounds = false;
     })
     container.addEventListener('mousemove', (event) => {
         const { clientX, clientY } = event;
-        calculateQuadrant(clientX, clientY);
-        calculateLinesSpeed(clientX, clientY);
+        if (state.inBounds) {
+            calculateQuadrant(clientX, clientY);
+            calculateLinesSpeed(clientX, clientY);
+        }
     })
 }
 
@@ -118,7 +137,19 @@ function changeQuadrant(newQuad) {
     }
 }
 
-function calculateLinesSpeed() {
+function calculateLinesSpeed(mouseX, mouseY) {
+    const { x: containerX, y: containerY } = container.getBoundingClientRect()
+
+    const localX = mouseX - containerX;
+    const localY = mouseY - containerY;
+    const linesToCalc = state.modules[state.force.axis];
+    const currentDistanceToCenter = distance(localX, localY, state.center.X, state.center.Y);
+    //const minimumDistance = state.maxPossibleDistance * (1 - state.centerTolerance);
+    const distanceToCenterModifier = map(currentDistanceToCenter, 0, state.maxPossibleDistance, 0, 1, true)
+
+    linesToCalc.forEach((singleLine) => {
+        singleLine.speed = state.maxSpeed * distanceToCenterModifier * state.force.direction;
+    })
 
 }
 
@@ -271,6 +302,7 @@ function calculateOffset() {
 
 // TODO:
 // 
+// use getBoundingClientRect!!!!!!!!!!!
 // Set new "active column" var
 // general cleanup
 // use foreachs whenever possible
