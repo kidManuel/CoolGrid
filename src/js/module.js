@@ -25,7 +25,6 @@ export default class module {
             left: 0
         }
         this.content = content;
-        this.noCompile = false;
     }
 
     getRight() {

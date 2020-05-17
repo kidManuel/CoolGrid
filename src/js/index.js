@@ -170,52 +170,48 @@ function setModulePosition(element) {
     const { x, y } = element;
     let outstandingAmmount = 0;
 
-    if (element.noCompile) {
-        element.noCompile = false;
-    } else {
-        element.compileFrameMovementVector();
 
-        // Bottoms
-        if (element.frameMovementVector['top'] > 0) {
-            outstandingAmmount = element.frameMovementVector['top'];
-            if ((top + outstandingAmmount) >= state.containerHeight) {
-                shiftElement(getLine('y', x), element);
-            } else if ((bottom + outstandingAmmount) > state.containerHeight) {
-                getLine('y', x).linkGhostToElement(element);
-            }
+    element.compileFrameMovementVector();
+
+    // Bottoms
+    if (element.frameMovementVector['top'] > 0) {
+        outstandingAmmount = element.frameMovementVector['top'];
+        if ((top + outstandingAmmount) >= state.containerHeight) {
+            shiftElement(getLine('y', x), element);
+        } else if ((bottom + outstandingAmmount) > state.containerHeight) {
+            getLine('y', x).linkGhostToElement(element);
         }
+    }
 
-        // Top
-        if (element.frameMovementVector['top'] < 0) {
-            outstandingAmmount = element.frameMovementVector['top'];
-            if ((bottom + outstandingAmmount) <= 0) {
-                shiftElement(getLine('y', x), element);
-            } else if ((top + outstandingAmmount) < 0) {
-                getLine('y', x).linkGhostToElement(element);
-            }
+    // Top
+    if (element.frameMovementVector['top'] < 0) {
+        outstandingAmmount = element.frameMovementVector['top'];
+        if ((bottom + outstandingAmmount) <= 0) {
+            shiftElement(getLine('y', x), element);
+        } else if ((top + outstandingAmmount) < 0) {
+            getLine('y', x).linkGhostToElement(element);
         }
+    }
 
-        // Left
-        if (element.frameMovementVector['left'] < 0) {
-            outstandingAmmount = element.frameMovementVector['left'];
-            if ((right + outstandingAmmount) <= 0) {
-                shiftElement(getLine('x', y), element);
-            } else if ((left + outstandingAmmount) < 0) {
-                getLine('x', y).linkGhostToElement(element);
-            }
+    // Left
+    if (element.frameMovementVector['left'] < 0) {
+        outstandingAmmount = element.frameMovementVector['left'];
+        if ((right + outstandingAmmount) <= 0) {
+            shiftElement(getLine('x', y), element);
+        } else if ((left + outstandingAmmount) < 0) {
+            getLine('x', y).linkGhostToElement(element);
         }
+    }
 
 
-        // Right
-        if (element.frameMovementVector['left'] > 0) {
-            outstandingAmmount = element.frameMovementVector['left'];
-            if ((left + outstandingAmmount) >= state.containerWidth) {
-                shiftElement(getLine('x', y), element);
-            } else if ((right + outstandingAmmount) > state.containerWidth) {
-                getLine('x', y).linkGhostToElement(element);
-            }
+    // Right
+    if (element.frameMovementVector['left'] > 0) {
+        outstandingAmmount = element.frameMovementVector['left'];
+        if ((left + outstandingAmmount) >= state.containerWidth) {
+            shiftElement(getLine('x', y), element);
+        } else if ((right + outstandingAmmount) > state.containerWidth) {
+            getLine('x', y).linkGhostToElement(element);
         }
-
     }
 }
 
@@ -266,7 +262,6 @@ function calculateOffset() {
         if (ammount) {
             for (let i = 0; i < currentLine.contents.length; i++) {
                 const singleModule = currentLine.contents[i];
-
                 // Are we on a direction that has offset?
                 singleModule.applyOffset(state.force.position, 0)
                 singleModule.applyOffset(state.prevForce.position, ammount)
