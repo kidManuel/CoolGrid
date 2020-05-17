@@ -3,6 +3,7 @@ import line from './line';
 import cssHandler from './cssHandler';
 import * as constants from './const';
 import { state } from './state';
+import { pyth, map } from './mathUtil';
 
 const {
     body,
@@ -20,6 +21,9 @@ function setup() {
     state.containerHeight = Math.floor(container.offsetHeight / state.rowsAmmount) * state.rowsAmmount;
     state.moduleSize = state.containerHeight / state.rowsAmmount;
     state.columnsAmmount = message.reduce((acc, curr) => Math.max(acc.length || acc, curr.length || curr));
+    state.center.centerX = state.containerWidth / 2;
+    state.center.centerY = state.containerHeight / 2;
+    state.maxPossibleDistance = pyth(state.centerX, state.centerY);
     state.containerWidth = state.columnsAmmount * state.moduleSize;
     state.containerRatio = state.containerHeight / state.containerWidth;
     container.style.height = `${state.containerHeight}px`;
@@ -100,6 +104,7 @@ function setListeners() {
     container.addEventListener('mousemove', (event) => {
         const { clientX, clientY } = event;
         calculateQuadrant(clientX, clientY);
+        calculateLinesSpeed(clientX, clientY);
     })
 }
 
@@ -113,6 +118,10 @@ function changeQuadrant(newQuad) {
             calculateOffset();
         }
     }
+}
+
+function calculateLinesSpeed() {
+
 }
 
 function calculateQuadrant(clientX, clientY) {

@@ -7,9 +7,13 @@ let state = {
     containerWidth: 0,
     containerRatio: 0,
     moduleSize: 0,
-    shouldAnimate: false,
-    force: {
+    center: {
+        centerX: null,
+        centerY: null,
     },
+    maxPossibleDistance: Infinity,
+    shouldAnimate: false,
+    force: {},
     prevForce: {},
     modules: {
         x: [],
