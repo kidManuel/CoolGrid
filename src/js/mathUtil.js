@@ -1,6 +1,5 @@
-export const pyth = (a, b) => Math.sqrt(Math.pow(a, 2), Math.pow(b, 2))
+export const pyth = (a, b) => Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
 export const distance = (x1, y1, x2, y2) => pyth(x1 - x2, y1 - y2)
-
 
 // Pretty much ripped straight from p5's math helper.
 // https://github.com/processing/p5.js/blob/1.0.0/src/math/calculation.js

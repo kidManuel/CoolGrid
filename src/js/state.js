@@ -8,8 +8,8 @@ let state = {
     containerRatio: 0,
     moduleSize: 0,
     center: {
-        centerX: null,
-        centerY: null,
+        X: null,
+        Y: null,
     },
     maxPossibleDistance: Infinity,
     shouldAnimate: false,

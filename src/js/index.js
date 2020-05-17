@@ -148,7 +148,7 @@ function calculateLinesSpeed(mouseX, mouseY) {
     const distanceToCenterModifier = map(currentDistanceToCenter, 0, state.maxPossibleDistance, 0, 1, true)
 
     linesToCalc.forEach((singleLine) => {
-        singleLine.speed = state.maxSpeed * distanceToCenterModifier * state.force.direction;
+        singleLine.speed = Math.round(state.maxSpeed * distanceToCenterModifier * state.force.direction);
     })
 
 }
