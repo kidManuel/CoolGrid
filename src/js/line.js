@@ -44,7 +44,7 @@ export default class line {
         ghost.content = linkedTo.content;
     }
 
-    promoteGhost(resetElement) {
+    shiftLine(resetElement) {
         const { ghost, contents } = this;
         const { axis } = this.data;
         const isCurrentMovementPositive = resetElement.frameMovementVector[this.data.position] > 0

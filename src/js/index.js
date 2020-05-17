@@ -93,14 +93,12 @@ function setListeners() {
     devModeToggle.addEventListener('click', () => {
         toggleDevMode();
     })
-
     container.addEventListener('mouseenter', () => {
         state.shouldAnimate = true;
     })
     container.addEventListener('mouseleave', () => {
         changeQuadrant(forces.nullForce);
     })
-
     container.addEventListener('mousemove', (event) => {
         const { clientX, clientY } = event;
         calculateQuadrant(clientX, clientY);
@@ -170,7 +168,6 @@ function setModulePosition(element) {
     const { x, y } = element;
     let outstandingAmmount = 0;
 
-
     element.compileFrameMovementVector();
 
     // Bottoms
@@ -203,7 +200,6 @@ function setModulePosition(element) {
         }
     }
 
-
     // Right
     if (element.frameMovementVector['left'] > 0) {
         outstandingAmmount = element.frameMovementVector['left'];
@@ -219,18 +215,15 @@ function getLine(a, b) {
     return state.modules[a][b];
 }
 
-function shiftElement(container, newGhost) {
-    const oldGhost = container.ghost;
-    const { contents } = container;
-    const { axis, inverseAxis } = container.data;
-
-    container.promoteGhost(newGhost);
+function shiftElement(container, shiftedElement) {
+    const { ghost, contents, data: { axis, inverseAxis } } = container;
+    container.shiftLine(shiftedElement);
 
     // Assign to each element of the container its new correct position
     for (let i = 0; i < contents.length; i++) {
         contents[i][axis] = i;
         const inverseContainer = state.modules[inverseAxis][i];
-        inverseContainer.contents[oldGhost[inverseAxis]] = contents[i];
+        inverseContainer.contents[ghost[inverseAxis]] = contents[i];
     }
 }
 
@@ -240,9 +233,7 @@ function calculateOffset() {
 
     for (let e = 0; e < lines.length; e++) {
         const currentLine = lines[e];
-
         const moduleToCheck = currentLine.ghost;
-
         const negative = state.prevForce.isVert ? moduleToCheck.top : moduleToCheck.left
         const positive = state.prevForce.isVert ? moduleToCheck.getBottom() : moduleToCheck.getRight();
         const containerSize = state.prevForce.isVert ? state.containerHeight : state.containerWidth;
