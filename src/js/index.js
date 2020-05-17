@@ -98,21 +98,8 @@ function setListeners() {
     })
 
     container.addEventListener('mousemove', (event) => {
-        let mouseX = (event.clientX - container.offsetLeft) * state.containerRatio;
-        let mouseY = event.clientY - container.offsetTop;
-        if (mouseY > mouseX) {
-            if (mouseX > state.containerHeight - mouseY) {
-                changeQuadrant(forces[quadrants.bot]);
-            } else {
-                changeQuadrant(forces[quadrants.left])
-            }
-        } else {
-            if (mouseX < state.containerWidth * state.containerRatio - mouseY) {
-                changeQuadrant(forces[quadrants.top])
-            } else {
-                changeQuadrant(forces[quadrants.right])
-            }
-        }
+        const { clientX, clientY } = event;
+        calculateQuadrant(clientX, clientY);
     })
 }
 
@@ -121,10 +108,28 @@ function changeQuadrant(newQuad) {
     if (currentQuad.quadrantName !== newQuad.quadrantName) {
         state.prevForce = state.force;
         state.force = newQuad;
+        // Dont calc offset on first enter
+        if (!(state.prevForce.quadrantName === 'nullForce')) {
+            calculateOffset();
+        }
     }
-    // Dont calc offset on first enter
-    if (!(state.prevForce.quadrantName === 'nullForce')) {
-        calculateOffset();
+}
+
+function calculateQuadrant(clientX, clientY) {
+    let mouseX = (clientX - container.offsetLeft) * state.containerRatio;
+    let mouseY = clientY - container.offsetTop;
+    if (mouseY > mouseX) {
+        if (mouseX > state.containerHeight - mouseY) {
+            changeQuadrant(forces[quadrants.bot]);
+        } else {
+            changeQuadrant(forces[quadrants.left])
+        }
+    } else {
+        if (mouseX < state.containerWidth * state.containerRatio - mouseY) {
+            changeQuadrant(forces[quadrants.top])
+        } else {
+            changeQuadrant(forces[quadrants.right])
+        }
     }
 }
 
