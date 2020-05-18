@@ -1,5 +1,6 @@
 import { state } from './state';
-import { modulePositions } from './const';
+const modulePositions = document.getElementById('modulePositions');
+
 
 class cssHandler {
     constructor() {

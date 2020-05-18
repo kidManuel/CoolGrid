@@ -144,13 +144,15 @@ function calculateLinesSpeed(mouseX, mouseY) {
     const localY = mouseY - containerY;
     const linesToCalc = state.modules[state.force.axis];
     const currentDistanceToCenter = distance(localX, localY, state.center.X, state.center.Y);
+    const RatioFixedDistanceToCenter = currentDistanceToCenter * (state.force.isVert ? 1 : state.containerRatio);
+    console.log(RatioFixedDistanceToCenter);
     //const minimumDistance = state.maxPossibleDistance * (1 - state.centerTolerance);
-    const distanceToCenterModifier = map(currentDistanceToCenter, 0, state.maxPossibleDistance, 0, 1, true)
+
+    const distanceToCenterModifier = map(RatioFixedDistanceToCenter, 0, state.maxPossibleDistance, 0, 1, true)
 
     linesToCalc.forEach((singleLine) => {
         singleLine.speed = Math.round(state.maxSpeed * distanceToCenterModifier * state.force.direction);
     })
-
 }
 
 function calculateQuadrant(clientX, clientY) {

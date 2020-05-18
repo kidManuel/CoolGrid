@@ -16,7 +16,7 @@ body.devMode {
 #visualContainer {
     margin: 10vh auto;
     position: relative;
-    height: 80vh;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -41,15 +41,18 @@ body.devMode {
 .module {
     position: absolute;
     box-sizing: border-box;
+    border-top: 30px solid yellow;
 }
 
 .module:after {
-    font-family: 'Major Mono Display', monospace;
+    font-family: 'Helvetica';
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
+    font-weight: 700;
+    color: yellow;
 }
 
 .devMode .module {
