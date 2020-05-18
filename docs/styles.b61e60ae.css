@@ -1,0 +1,68 @@
+body,
+html {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    background: black;
+    color: white;
+    overflow: hidden;
+}
+
+body.devMode {
+    background: white;
+}
+
+#visualContainer {
+    margin: 10vh auto;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.devMode #visualContainer {
+    overflow: visible !important;
+    outline: solid 4px green;
+}
+
+.devMode #visualContainer::after {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-image: url('/guide-01.481cfd48.png');
+    background-size: 100% 100%;
+    display: inline-block;
+    content: '';
+    z-index: 2;
+}
+
+.module {
+    position: absolute;
+    box-sizing: border-box;
+    border-top: 30px solid yellow;
+}
+
+.module:after {
+    font-family: 'Helvetica';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 700;
+    color: yellow;
+}
+
+.devMode .module {
+    outline: dashed 1px purple;
+    background: rgba(0, 0, 0, 0.3)
+}
+
+.devMode .module.ghost {
+    outline: solid 1px rgb(255, 0, 0, 0.4);
+}
+
+
+/*# sourceMappingURL=/styles.b61e60ae.css.map */

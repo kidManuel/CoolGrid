@@ -73,11 +73,8 @@ export default class module {
             // Reduce outstanding offset by ammount
             offset.top -= signedAmmount;
         }
-
-
         if (offset.left) {
             const { left } = offset;
-
             const absoluteAmmount = Math.min(Math.abs(left), state.maxSpeed);
             const signedAmmount = absoluteAmmount * Math.sign(left);
 
